@@ -4,7 +4,10 @@
 #include <math.h>
 #include "../rendering/BufferWriter.h"
 
-SphereRenderable::SphereRenderable(Pos3F center, float radius) : color(ColorRGBA(.1f,.5f,.1f,1.f)) {
+SphereRenderable::SphereRenderable(Pos3F center, float radius, const Material& mat) : 
+	color(ColorRGBA(.1f,.5f,.1f,1.f)),
+	material(mat)
+{
 	this->center = center;
 	this->radius = radius;
 	thetaSlices = 30;
@@ -60,7 +63,7 @@ void SphereRenderable::GenerateRenderPoints()
 	}
 }
 
-void SphereRenderable::Render(std::vector<float>& vbo, unsigned int vboLoc, unsigned int pointCount, std::vector<unsigned int>& ebo, unsigned int eboLoc) const \
+void SphereRenderable::Render(std::vector<float>& vbo, unsigned int vboLoc, unsigned int pointCount, std::vector<unsigned int>& ebo, unsigned int eboLoc) 
 {
 	int tPlus1 = thetaSlices + 1;
 	for (int i = 0; i < renderPoints.size(); i++) {
@@ -87,16 +90,4 @@ void SphereRenderable::Render(std::vector<float>& vbo, unsigned int vboLoc, unsi
 			eboLoc++;
 		}
 	}
-}
-
-Material SphereRenderable::GetMaterial() const
-{
-	Material mat;
-	mat.color = color;
-	mat.ka = 0.4f;
-	mat.kd = 0.7f;
-	mat.ks = 0.1f;
-	mat.specPower = 10;
-	mat.textureID = -1;
-	return mat;
 }

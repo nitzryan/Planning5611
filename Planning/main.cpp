@@ -140,6 +140,10 @@ int main(int, char**) {
 	while (!input.quit) {
 		// Keyboard events
 		int newSceneId = GetInput(input, windowEvent);
+		if (input.lctrl) {
+			input.lctrl = false;
+			scene.Step();
+		}
 
 		if (newSceneId != -1) {
 			camera.SetAspect((float)screenDetails.width, (float)screenDetails.height);

@@ -155,6 +155,9 @@
     <ClInclude Include="glad\glad.h" />
     <ClInclude Include="glad\khrplatform.h" />
     <ClInclude Include="glm\glm.hpp" />
+    <ClInclude Include="ik\IKArm.h" />
+    <ClInclude Include="ik\IKBase.h" />
+    <ClInclude Include="ik\IKRobot.h" />
     <ClInclude Include="rendering\BufferWriter.h" />
     <ClInclude Include="rendering\Camera.h" />
     <ClInclude Include="rendering\ColorRGBA.h" />
@@ -171,6 +174,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad.c" />
+    <ClCompile Include="ik\IKArm.cpp" />
+    <ClCompile Include="ik\IKBase.cpp" />
+    <ClCompile Include="ik\IKRobot.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="rendering\Camera.cpp" />
     <ClCompile Include="rendering\PlaneRenderable.cpp" />

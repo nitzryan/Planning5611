@@ -14,4 +14,10 @@ struct Material {
 		specPower = 10;
 		textureID = -1;
 	}
+
+	Material(const ColorRGBA& color, float ka, float kd, float ks, float specPower, int textureId) :
+	color(color), ka(ka), kd(kd), ks(ks), specPower(specPower), textureID(textureId)
+	{
+		
+	}
 };

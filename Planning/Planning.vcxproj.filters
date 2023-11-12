@@ -102,6 +102,15 @@
     <ClInclude Include="rendering\SphereRenderable.h">
       <Filter>rendering</Filter>
     </ClInclude>
+    <ClInclude Include="ik\IKBase.h">
+      <Filter>ik</Filter>
+    </ClInclude>
+    <ClInclude Include="ik\IKArm.h">
+      <Filter>ik</Filter>
+    </ClInclude>
+    <ClInclude Include="ik\IKRobot.h">
+      <Filter>ik</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad.c">
@@ -121,6 +130,15 @@
     </ClCompile>
     <ClCompile Include="rendering\SphereRenderable.cpp">
       <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="ik\IKBase.cpp">
+      <Filter>ik</Filter>
+    </ClCompile>
+    <ClCompile Include="ik\IKArm.cpp">
+      <Filter>ik</Filter>
+    </ClCompile>
+    <ClCompile Include="ik\IKRobot.cpp">
+      <Filter>ik</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

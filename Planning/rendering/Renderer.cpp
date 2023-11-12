@@ -179,7 +179,7 @@ void Renderer::StartFrame()
 	renderingQueue.clear();
 }
 
-void Renderer::Render(const IRenderable& obj)
+void Renderer::Render(IRenderable& obj)
 {
 	int numVertices = obj.NumPoints() * vertexSize;
 	int numIndices = obj.NumIndices();

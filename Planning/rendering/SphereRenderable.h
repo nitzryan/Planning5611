@@ -8,11 +8,11 @@
 class SphereRenderable :
 	public IRenderable{
 public:
-	SphereRenderable(Pos3F center, float radius);
+	SphereRenderable(Pos3F center, float radius, const Material& mat);
 	int NumIndices() const override { return 6 * (thetaSlices + 1) * phiSlices; };
 	int NumPoints() const override { return (thetaSlices + 1) * (phiSlices + 1); }; // need 0 and 2 * pi for theta, since different text coords
-	void Render(std::vector<float>& vbo, unsigned int vboLoc, unsigned int pointCount, std::vector<unsigned int>& ebo, unsigned int eboLoc) const override;
-	Material GetMaterial() const override;
+	void Render(std::vector<float>& vbo, unsigned int vboLoc, unsigned int pointCount, std::vector<unsigned int>& ebo, unsigned int eboLoc) override;
+	Material GetMaterial() const override { return material; }
 	//void Update(float dt); // porbbaly not needed as it will not move
 	float get_radius() const;
 	Pos3F get_center() const;
@@ -21,6 +21,7 @@ public:
 private:
 	Pos3F center;
 	float radius;
+	Material material;
 	ColorRGBA color;
 	int thetaSlices;
 	int phiSlices;

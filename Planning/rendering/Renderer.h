@@ -15,7 +15,7 @@ public:
 	void StartFrame();
 
 	void SetCamera(const Camera& camera);
-	void Render(const IRenderable& obj);
+	void Render(IRenderable& obj);
 	void SetLightDirection(const Vec3F& v) { lightDir = v; lightDir.Normalize(); }
 	void FinalizeFrame();
 private:

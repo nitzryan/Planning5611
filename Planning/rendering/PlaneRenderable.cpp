@@ -17,7 +17,7 @@ int PlaneRenderable::NumPoints() const
 	return 4;
 }
 
-void PlaneRenderable::Render(std::vector<float>& vbo, unsigned int vboLoc, unsigned int pointCount, std::vector<unsigned int>& ebo, unsigned int eboLoc) const
+void PlaneRenderable::Render(std::vector<float>& vbo, unsigned int vboLoc, unsigned int pointCount, std::vector<unsigned int>& ebo, unsigned int eboLoc) 
 {
 	Vec3F normal = Vec3F::Cross(p1 - p3, p1 - p2);
 	normal.Normalize();
