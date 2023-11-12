@@ -5,7 +5,6 @@
 #include "../rendering/BufferWriter.h"
 
 SphereRenderable::SphereRenderable(Pos3F center, float radius, const Material& mat) : 
-	color(ColorRGBA(.1f,.5f,.1f,1.f)),
 	material(mat)
 {
 	this->center = center;
@@ -69,7 +68,7 @@ void SphereRenderable::Render(std::vector<float>& vbo, unsigned int vboLoc, unsi
 	for (int i = 0; i < renderPoints.size(); i++) {
 		int phiSlice = i / tPlus1;
 		int thetaSlice = i % tPlus1;
-		BufferWriter::AddPoint(vbo, vboLoc, renderPoints[i], color, normals[i], (float)(thetaSlice) / (thetaSlices),(float)(phiSlice) / phiSlices);
+		BufferWriter::AddPoint(vbo, vboLoc, renderPoints[i], material.color, normals[i], (float)(thetaSlice) / (thetaSlices),(float)(phiSlice) / phiSlices);
 	}
 
 	// Write to EBO

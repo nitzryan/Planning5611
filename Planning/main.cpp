@@ -25,6 +25,7 @@ struct UserInput {
 	bool downPressed = false;
 	bool lctrl = false;
 	bool quit = false;
+	bool toggleJointLimits = false;
 };
 
 int GetInput(UserInput& input, SDL_Event& windowEvent) {
@@ -57,6 +58,8 @@ int GetInput(UserInput& input, SDL_Event& windowEvent) {
 			scene = 1;
 		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_2)
 			scene = 2;
+		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_j)
+			input.toggleJointLimits = true;
 	}
 
 	return scene;
@@ -140,13 +143,14 @@ int main(int, char**) {
 	while (!input.quit) {
 		// Keyboard events
 		int newSceneId = GetInput(input, windowEvent);
-		if (input.lctrl) {
-			input.lctrl = false;
-			scene.Step();
-		}
 
 		if (newSceneId != -1) {
 			camera.SetAspect((float)screenDetails.width, (float)screenDetails.height);
+		}
+
+		if (input.toggleJointLimits) {
+			IKArm::IgnoreJointLimits = !IKArm::IgnoreJointLimits;
+			input.toggleJointLimits = false;
 		}
 
 		auto thisFrameTime = std::chrono::high_resolution_clock::now();
@@ -156,10 +160,15 @@ int main(int, char**) {
 		renderer.SetCamera(camera);
 		float frameTime = dt.count();
 
+		if (input.lctrl) {
+			input.lctrl = false;
+			scene.Update(3.0f * frameTime);
+		}
+
 		MoveCamera(input, camera, frameTime);
 		renderer.SetCamera(camera);
 
-		scene.Update(frameTime);
+		//scene.Update(frameTime);
 		scene.Render(renderer);
 
 		renderer.FinalizeFrame();

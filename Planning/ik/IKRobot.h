@@ -11,14 +11,18 @@ class IKRobot
 {
 public:
 	IKRobot();
-	void MoveTowards(const Pos3F& point);
-	void StepTowards(const std::vector<Pos3F>& points);
+	void MoveTowards(const std::vector<Pos3F>& points, float dt);
+	bool IsAtPosition(const std::vector<Pos3F>& points, float dist) const;
+	//void StepTowards(const std::vector<Pos3F>& points);
 
 	void RenderRobot(Renderer& renderer);
+	float GetMaxReach() const;
 private:
 	IKBase base;
 	std::vector<IKArm> arms;
-	size_t armsIdx;
+	std::vector<CircleRenderable> joints;
+	//size_t armsIdx;
 	std::vector<Pos3F> endpoints;
 };
+
 

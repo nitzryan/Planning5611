@@ -2,6 +2,10 @@
 
 #include <math.h>
 
+const float MAX_ROT_SPEED = 0.6f;
+
+bool IKArm::IgnoreJointLimits = false;
+
 IKArm::IKArm(const Material& mat, float length, float width, float startTheta, float thetaMin, float thetaMax, int endpointIdx) :
 	PlaneRenderable(Pos3F(0,0,0), Pos3F(0, 0, 0), Pos3F(0, 0, 0), Pos3F(0, 0, 0), mat),
 	thetaMin(thetaMin),
@@ -16,11 +20,11 @@ IKArm::IKArm(const Material& mat, float length, float width, float startTheta, f
 {
 }
 
-void IKArm::UpdateTheta(const std::vector<std::pair<const Pos3F&, const Pos3F&>>& EDs)
+void IKArm::UpdateTheta(const std::vector<std::pair<const Pos3F&, const Pos3F&>>& eds, float dt)
 {
 	float deltaTheta = 0;
 
-	for (auto& ed : EDs) {
+	for (auto& ed : eds) {
 		Vec3F RE = ed.first.Subtract(pos);
 		Vec3F RD = ed.second.Subtract(pos);
 		RE.Normalize();
@@ -31,7 +35,6 @@ void IKArm::UpdateTheta(const std::vector<std::pair<const Pos3F&, const Pos3F&>>
 		}
 
 		float a = acosf(dot);
-		a *= 0.1f;
 
 		float cross2D = RE.x * RD.y - RE.y * RD.x;
 		if (cross2D < 0) {
@@ -42,7 +45,24 @@ void IKArm::UpdateTheta(const std::vector<std::pair<const Pos3F&, const Pos3F&>>
 		}
 	}
 	
+	deltaTheta /= eds.size();
+
+	// Cap Speed
+	if (abs(deltaTheta) > MAX_ROT_SPEED * dt) {
+		if (deltaTheta > 0) {
+			deltaTheta = MAX_ROT_SPEED * dt;
+		}
+		else {
+			deltaTheta = -MAX_ROT_SPEED * dt;
+		}
+	}
+
 	theta += deltaTheta;
+
+	// Joint Limits
+	if (IKArm::IgnoreJointLimits) {
+		return;
+	}
 
 	if (theta > thetaMax) {
 		theta = thetaMax;
@@ -50,6 +70,11 @@ void IKArm::UpdateTheta(const std::vector<std::pair<const Pos3F&, const Pos3F&>>
 	else if (theta < thetaMin) {
 		theta = thetaMin;
 	}
+}
+
+void IKArm::ForwardPassFromCurrent()
+{
+	ForwardPass(pos, startDir);
 }
 
 void IKArm::ForwardPass(const Pos3F& newPos, float startDir)

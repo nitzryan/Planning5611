@@ -195,6 +195,7 @@ void Renderer::Render(IRenderable& obj)
 		return;
 	}
 
+	
 	obj.Render(vboContents, currentVboLoc, currentVboLoc / vertexSize, indices, currentIndicesLoc);
 	renderingQueue.push_back(RenderingData{ mat, (unsigned int)numIndices, (unsigned int)currentIndicesLoc });
 	currentVboLoc += numVertices;

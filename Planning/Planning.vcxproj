@@ -160,6 +160,7 @@
     <ClInclude Include="ik\IKRobot.h" />
     <ClInclude Include="rendering\BufferWriter.h" />
     <ClInclude Include="rendering\Camera.h" />
+    <ClInclude Include="rendering\CircleRenderable.h" />
     <ClInclude Include="rendering\ColorRGBA.h" />
     <ClInclude Include="rendering\IRenderable.h" />
     <ClInclude Include="rendering\Material.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="ik\IKRobot.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="rendering\Camera.cpp" />
+    <ClCompile Include="rendering\CircleRenderable.cpp" />
     <ClCompile Include="rendering\PlaneRenderable.cpp" />
     <ClCompile Include="rendering\Renderer.cpp" />
     <ClCompile Include="rendering\SphereRenderable.cpp" />
