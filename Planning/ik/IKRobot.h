@@ -12,7 +12,7 @@ class IKRobot
 public:
 	IKRobot();
 	void MoveTowards(const Pos3F& point);
-	void StepTowards(const Pos3F& point);
+	void StepTowards(const std::vector<Pos3F>& points);
 
 	void RenderRobot(Renderer& renderer);
 private:

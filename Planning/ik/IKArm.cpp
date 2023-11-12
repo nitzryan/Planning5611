@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-IKArm::IKArm(const Material& mat, float length, float width, float startTheta, float thetaMin, float thetaMax) :
+IKArm::IKArm(const Material& mat, float length, float width, float startTheta, float thetaMin, float thetaMax, int endpointIdx) :
 	PlaneRenderable(Pos3F(0,0,0), Pos3F(0, 0, 0), Pos3F(0, 0, 0), Pos3F(0, 0, 0), mat),
 	thetaMin(thetaMin),
 	thetaMax(thetaMax),
@@ -10,32 +10,39 @@ IKArm::IKArm(const Material& mat, float length, float width, float startTheta, f
 	width(width),
 	theta(startTheta),
 	startDir(0),
+	endpointIdx(endpointIdx),
 	pos(Pos3F(0, 0, 0)),
 	endPos(Pos3F(0, 0, 0))
 {
 }
 
-void IKArm::UpdateTheta(const Pos3F& E, const Pos3F& D)
+void IKArm::UpdateTheta(const std::vector<std::pair<const Pos3F&, const Pos3F&>>& EDs)
 {
-	Vec3F RE = E.Subtract(pos);
-	Vec3F RD = D.Subtract(pos);
-	RE.Normalize();
-	RD.Normalize();
-	float dot = Vec3F::Dot(RE, RD);
-	if (dot > 1.0f) { // Numerical error can cause acosf to return NaN
-		dot = 1.0f;
-	}
+	float deltaTheta = 0;
 
-	float a = acosf(dot);
-	a *= 0.1f;
+	for (auto& ed : EDs) {
+		Vec3F RE = ed.first.Subtract(pos);
+		Vec3F RD = ed.second.Subtract(pos);
+		RE.Normalize();
+		RD.Normalize();
+		float dot = Vec3F::Dot(RE, RD);
+		if (dot > 1.0f) { // Numerical error can cause acosf to return NaN
+			dot = 1.0f;
+		}
 
-	float cross2D = RE.x * RD.y - RE.y * RD.x;
-	if (cross2D < 0) {
-		theta -= a;
+		float a = acosf(dot);
+		a *= 0.1f;
+
+		float cross2D = RE.x * RD.y - RE.y * RD.x;
+		if (cross2D < 0) {
+			deltaTheta -= a;
+		}
+		else {
+			deltaTheta += a;
+		}
 	}
-	else {
-		theta += a;
-	}
+	
+	theta += deltaTheta;
 
 	if (theta > thetaMax) {
 		theta = thetaMax;
@@ -43,8 +50,6 @@ void IKArm::UpdateTheta(const Pos3F& E, const Pos3F& D)
 	else if (theta < thetaMin) {
 		theta = thetaMin;
 	}
-
-	theta = theta;
 }
 
 void IKArm::ForwardPass(const Pos3F& newPos, float startDir)
@@ -60,13 +65,13 @@ void IKArm::ForwardPass(const Pos3F& newPos, float startDir)
 	}
 }
 
-std::vector<Pos3F> IKArm::GetEndpoints() const
+std::vector<std::pair<Pos3F, int>> IKArm::GetEndpoints() const
 {
 	if (children.empty()) {
-		return { endPos };
+		return { { endPos, endpointIdx } };
 	}
 
-	std::vector<Pos3F> endpoints;
+	std::vector<std::pair<Pos3F, int>> endpoints;
 	for (auto i : children) {
 		auto childEndpoints = i->GetEndpoints();
 		for (auto& j : childEndpoints) {

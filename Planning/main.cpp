@@ -125,7 +125,7 @@ int main(int, char**) {
 	}
 
 	Renderer renderer = Renderer();
-	Camera camera(1, 1, Pos3F(0, .5, -3), Vec3F(0, 0, 1), Vec3F(0, 1, 0));
+	Camera camera(1, 1, Pos3F(0, 0, 3), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
 	camera.SetAspect((float)screenDetails.width, (float)screenDetails.height);
 
 	// Main Loop
