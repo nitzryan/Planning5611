@@ -225,7 +225,7 @@ void Renderer::FinalizeFrame()
 	GLint uView = glGetUniformLocation(shaderProgram, "view");
 	glUniformMatrix4fv(uView, 1, GL_FALSE, glm::value_ptr(view));
 
-	glm::mat4 proj = glm::perspective(3.14f / 4, 1.0f, 0.1f, 10.0f);
+	glm::mat4 proj = glm::perspective(3.14f / 4, 1.0f, 0.1f, 100.0f);
 	GLint uProj = glGetUniformLocation(shaderProgram, "proj");
 	glUniformMatrix4fv(uProj, 1, GL_FALSE, glm::value_ptr(proj));
 

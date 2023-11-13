@@ -9,6 +9,7 @@
 #include "rendering/Camera.h"
 #include "rendering/Renderer.h"
 #include "scene/TestScene.h"
+#include "crowd/CrowdSim.h"
 
 struct ScreenDetails {
 	bool fullscreen;
@@ -128,7 +129,8 @@ int main(int, char**) {
 	}
 
 	Renderer renderer = Renderer();
-	Camera camera(1, 1, Pos3F(0, 0, 3), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
+	//Camera camera(1, 1, Pos3F(0, 0, 3), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
+	Camera camera(1, 1, Pos3F(0, 0, 15), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
 	camera.SetAspect((float)screenDetails.width, (float)screenDetails.height);
 
 	// Main Loop
@@ -139,6 +141,7 @@ int main(int, char**) {
 
 	UserInput input;
 	TestScene scene;
+	CrowdSim crowdSim;
 
 	while (!input.quit) {
 		// Keyboard events
@@ -162,14 +165,16 @@ int main(int, char**) {
 
 		if (input.lctrl) {
 			input.lctrl = false;
-			scene.Update(3.0f * frameTime);
+			//scene.Update(3.0f * frameTime);
+			crowdSim.Update(frameTime);
 		}
 
 		MoveCamera(input, camera, frameTime);
 		renderer.SetCamera(camera);
 
 		//scene.Update(frameTime);
-		scene.Render(renderer);
+		//scene.Render(renderer);
+		crowdSim.Render(renderer);
 
 		renderer.FinalizeFrame();
 

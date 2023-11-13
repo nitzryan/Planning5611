@@ -37,6 +37,9 @@
     <Filter Include="scene">
       <UniqueIdentifier>{af21040a-de19-437a-a932-21839bef12e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="crowd">
+      <UniqueIdentifier>{769a06bd-33ed-476d-99f9-d3236303ab6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="geometry\AxisBox3F.h">
@@ -114,6 +117,24 @@
     <ClInclude Include="rendering\CircleRenderable.h">
       <Filter>rendering</Filter>
     </ClInclude>
+    <ClInclude Include="rendering\RectRenderable.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="crowd\CrowdDest.h">
+      <Filter>crowd</Filter>
+    </ClInclude>
+    <ClInclude Include="crowd\CrowdNode.h">
+      <Filter>crowd</Filter>
+    </ClInclude>
+    <ClInclude Include="crowd\CrowdMap.h">
+      <Filter>crowd</Filter>
+    </ClInclude>
+    <ClInclude Include="crowd\CrowdPerson.h">
+      <Filter>crowd</Filter>
+    </ClInclude>
+    <ClInclude Include="crowd\CrowdSim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad.c">
@@ -145,6 +166,24 @@
     </ClCompile>
     <ClCompile Include="rendering\CircleRenderable.cpp">
       <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\RectRenderable.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="crowd\CrowdDest.cpp">
+      <Filter>crowd</Filter>
+    </ClCompile>
+    <ClCompile Include="crowd\CrowdNode.cpp">
+      <Filter>crowd</Filter>
+    </ClCompile>
+    <ClCompile Include="crowd\CrowdMap.cpp">
+      <Filter>crowd</Filter>
+    </ClCompile>
+    <ClCompile Include="crowd\CrowdPerson.cpp">
+      <Filter>crowd</Filter>
+    </ClCompile>
+    <ClCompile Include="crowd\CrowdSim.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

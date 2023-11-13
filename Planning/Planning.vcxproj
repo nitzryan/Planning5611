@@ -147,6 +147,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="crowd\CrowdDest.h" />
+    <ClInclude Include="crowd\CrowdMap.h" />
+    <ClInclude Include="crowd\CrowdNode.h" />
+    <ClInclude Include="crowd\CrowdPerson.h" />
+    <ClInclude Include="crowd\CrowdSim.h" />
     <ClInclude Include="geometry\AxisBox3F.h" />
     <ClInclude Include="geometry\Line3F.h" />
     <ClInclude Include="geometry\Pos3F.h" />
@@ -165,6 +170,7 @@
     <ClInclude Include="rendering\IRenderable.h" />
     <ClInclude Include="rendering\Material.h" />
     <ClInclude Include="rendering\PlaneRenderable.h" />
+    <ClInclude Include="rendering\RectRenderable.h" />
     <ClInclude Include="rendering\Renderer.h" />
     <ClInclude Include="rendering\RenderingData.h" />
     <ClInclude Include="rendering\SphereRenderable.h" />
@@ -174,6 +180,11 @@
     <ClInclude Include="textures\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="crowd\CrowdDest.cpp" />
+    <ClCompile Include="crowd\CrowdMap.cpp" />
+    <ClCompile Include="crowd\CrowdNode.cpp" />
+    <ClCompile Include="crowd\CrowdPerson.cpp" />
+    <ClCompile Include="crowd\CrowdSim.cpp" />
     <ClCompile Include="glad\glad.c" />
     <ClCompile Include="ik\IKArm.cpp" />
     <ClCompile Include="ik\IKBase.cpp" />
@@ -182,6 +193,7 @@
     <ClCompile Include="rendering\Camera.cpp" />
     <ClCompile Include="rendering\CircleRenderable.cpp" />
     <ClCompile Include="rendering\PlaneRenderable.cpp" />
+    <ClCompile Include="rendering\RectRenderable.cpp" />
     <ClCompile Include="rendering\Renderer.cpp" />
     <ClCompile Include="rendering\SphereRenderable.cpp" />
   </ItemGroup>
