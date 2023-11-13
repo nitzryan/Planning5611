@@ -135,6 +135,18 @@
     <ClInclude Include="crowd\CrowdSim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="geometry\Line2F.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\Pos2F.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\Vec2F.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\CollisonDetection2D.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad.c">
@@ -184,6 +196,12 @@
     </ClCompile>
     <ClCompile Include="crowd\CrowdSim.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\Line3F.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\CollisionDetection2D.cpp">
+      <Filter>geometry</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

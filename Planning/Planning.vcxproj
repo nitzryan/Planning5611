@@ -153,9 +153,13 @@
     <ClInclude Include="crowd\CrowdPerson.h" />
     <ClInclude Include="crowd\CrowdSim.h" />
     <ClInclude Include="geometry\AxisBox3F.h" />
+    <ClInclude Include="geometry\CollisonDetection2D.h" />
+    <ClInclude Include="geometry\Line2F.h" />
     <ClInclude Include="geometry\Line3F.h" />
+    <ClInclude Include="geometry\Pos2F.h" />
     <ClInclude Include="geometry\Pos3F.h" />
     <ClInclude Include="geometry\Sphere.h" />
+    <ClInclude Include="geometry\Vec2F.h" />
     <ClInclude Include="geometry\Vec3F.h" />
     <ClInclude Include="glad\glad.h" />
     <ClInclude Include="glad\khrplatform.h" />
@@ -185,6 +189,8 @@
     <ClCompile Include="crowd\CrowdNode.cpp" />
     <ClCompile Include="crowd\CrowdPerson.cpp" />
     <ClCompile Include="crowd\CrowdSim.cpp" />
+    <ClCompile Include="geometry\CollisionDetection2D.cpp" />
+    <ClCompile Include="geometry\Line3F.cpp" />
     <ClCompile Include="glad\glad.c" />
     <ClCompile Include="ik\IKArm.cpp" />
     <ClCompile Include="ik\IKBase.cpp" />

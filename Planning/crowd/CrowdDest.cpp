@@ -1,9 +1,11 @@
 #include "CrowdDest.h"
+#include "../geometry/Line2F.h"
 
 CrowdDest::CrowdDest(float lx, float rx, float uy, float dy, const Material& mat, Pos3F exitPos, Pos3F enterPos) :
 	RectRenderable(Pos3F(lx, uy, 0), Pos3F(rx, uy, 0), Pos3F(lx, dy, 0), Pos3F(rx, dy, 0), mat),
 	exitPos(exitPos),
-	enterPos(enterPos)
+	enterPos(enterPos),
+	entryNoColPoint((exitPos.x + enterPos.x)/2, (exitPos.y + enterPos.y)/2)
 {
 }
 
@@ -34,6 +36,17 @@ void CrowdDest::CreateDStarHeuristic(const CrowdNode* startNode)
 	for (auto i : children) {
 		CreateDStarHeuristic(startNode, i, 0.0f);
 	}
+}
+
+bool CrowdDest::BlockPathBetween(const Pos2F& p1, const Pos2F& p2) const
+{
+	Line2F top = Line2F(ul, ur);
+	Line2F left = Line2F(ul, ll);
+	Line2F right = Line2F(ur, lr);
+	Line2F bot = Line2F(lr, ll);
+	Line2F test = Line2F(p1, p2);
+
+
 }
 
 void CrowdDest::CreateDStarHeuristic(const CrowdNode* parent, const CrowdNode* child, float parentScore)
