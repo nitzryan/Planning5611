@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-const float MAX_ROT_SPEED = 0.6f;
+const float MAX_ROT_SPEED = 1.5f;
 
 bool IKArm::IgnoreJointLimits = false;
 

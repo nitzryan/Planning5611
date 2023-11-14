@@ -8,7 +8,9 @@
 
 #include "rendering/Camera.h"
 #include "rendering/Renderer.h"
-#include "scene/TestScene.h"
+//#include "scene/TestScene.h"
+#include "scene/RobotScene1.h"
+#include "scene/RobotScene2.h"
 #include "crowd/CrowdSim.h"
 
 struct ScreenDetails {
@@ -59,43 +61,15 @@ int GetInput(UserInput& input, SDL_Event& windowEvent) {
 			scene = 1;
 		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_2)
 			scene = 2;
+		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_3)
+			scene = 3;
+		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_4)
+			scene = 4;
 		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_j)
 			input.toggleJointLimits = true;
 	}
 
 	return scene;
-}
-
-void MoveCamera(const UserInput& input, Camera& camera, float frameTime) {
-	if (input.lctrl) {
-		float w = 0.6f;
-		if (input.rightPressed) {
-			camera.RotateY(w, frameTime);
-		}
-		if (input.leftPressed) {
-			camera.RotateY(-w, frameTime);
-		}
-		if (input.upPressed) {
-			camera.RotateX(w, frameTime);
-		}
-		if (input.downPressed) {
-			camera.RotateX(-w, frameTime);
-		}
-	}
-	else {
-		if (input.rightPressed) {
-			camera.StepX(frameTime);
-		}
-		if (input.leftPressed) {
-			camera.StepX(-frameTime);
-		}
-		if (input.upPressed) {
-			camera.StepZ(frameTime);
-		}
-		if (input.downPressed) {
-			camera.StepZ(-frameTime);
-		}
-	}
 }
 
 int main(int, char**) {
@@ -129,8 +103,8 @@ int main(int, char**) {
 	}
 
 	Renderer renderer = Renderer();
-	//Camera camera(1, 1, Pos3F(0, 0, 3), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
-	Camera camera(1, 1, Pos3F(0, 0, 15), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
+	Camera camera(1, 1, Pos3F(0, 0, 3), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
+	//Camera camera(1, 1, Pos3F(0, 0, 15), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
 	camera.SetAspect((float)screenDetails.width, (float)screenDetails.height);
 
 	// Main Loop
@@ -140,8 +114,15 @@ int main(int, char**) {
 	const std::chrono::duration<float> targetFrameTime(0.01);
 
 	UserInput input;
-	TestScene scene;
+	RobotScene1 scene1;
+	RobotScene2 scene2;
 	CrowdSim crowdSim;
+
+	IScene* scene;
+	scene = &scene1;
+
+	IKArm::IgnoreJointLimits = true;
+	input.toggleJointLimits = true; // So that it outputs to console on load
 
 	while (!input.quit) {
 		// Keyboard events
@@ -149,11 +130,31 @@ int main(int, char**) {
 
 		if (newSceneId != -1) {
 			camera.SetAspect((float)screenDetails.width, (float)screenDetails.height);
+			if (newSceneId == 1 || newSceneId == 2) {
+				camera = Camera(1, 1, Pos3F(0, 0, 3), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
+			}
+			else {
+				camera = Camera(1, 1, Pos3F(0, 0, 15), Vec3F(0, 0, -1), Vec3F(0, 1, 0));
+			}
+			
+			if (newSceneId == 1) {
+				scene1 = RobotScene1();
+				scene = &scene1;
+			}
+			else if (newSceneId == 2) {
+				scene2 = RobotScene2();
+				scene = &scene2;
+			}
+			else if (newSceneId == 3) {
+				crowdSim = CrowdSim();
+				scene = &crowdSim;
+			}
 		}
 
 		if (input.toggleJointLimits) {
 			IKArm::IgnoreJointLimits = !IKArm::IgnoreJointLimits;
 			input.toggleJointLimits = false;
+			std::cout << "Using Joint Limits: " << !IKArm::IgnoreJointLimits << std::endl;
 		}
 
 		auto thisFrameTime = std::chrono::high_resolution_clock::now();
@@ -165,17 +166,17 @@ int main(int, char**) {
 
 		if (input.lctrl) {
 			input.lctrl = false;
-			//scene.Update(9.0f * frameTime);
+			scene->Update(frameTime);
 			
 		}
 
-		MoveCamera(input, camera, frameTime);
+		//MoveCamera(input, camera, frameTime);
 		renderer.SetCamera(camera);
 
 		//scene.Update(frameTime);
-		//scene.Render(renderer);
-		crowdSim.Update(frameTime);
-		crowdSim.Render(renderer);
+		scene->Render(renderer);
+		//crowdSim.Update(frameTime);
+		//crowdSim.Render(renderer);
 
 		renderer.FinalizeFrame();
 

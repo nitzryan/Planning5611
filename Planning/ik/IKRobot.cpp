@@ -1,27 +1,39 @@
 #include "IKRobot.h"
 
-IKRobot::IKRobot() :
-	base(Pos2F(0,0), 0.1f, 0.0f, Material(ColorRGBA(0.2f, 0.2f, 0.2f, 1), 1, 0, 0, 10, -1))
+IKRobot::IKRobot(std::vector<IKArm> a, std::vector<std::vector<int>> armChildren) :
+	base(Pos2F(0,0), 0.1f, 0.0f, Material(ColorRGBA(0.2f, 0.2f, 0.2f, 1), 1, 0, 0, 10, -1)), arms(a)
 {
-	Material matShared = Material(ColorRGBA(0.6f, 0.6f, 0.6f, 1), 1, 0, 0, 10, -1);
-	Material mat0 = Material(ColorRGBA(0.8f, 0.2f, 0.2f, 1), 1, 0, 0, 10, -1);
-	Material mat1 = Material(ColorRGBA(0.1f, 0.2f, 0.8f, 1), 1, 0, 0, 10, -1);
-	arms.emplace_back(matShared, 0.4f, 0.1f, 0.6f, -1.57f, 1.57f, -1);
-	arms.emplace_back(matShared, 0.4f, 0.1f, 0.0f, -1.57f, 1.57f, -1);
-	arms.emplace_back(mat0, 0.4f, 0.1f, 0.4f, 0.1f, 1.57f, 0);
-	arms.emplace_back(mat1, 0.4f, 0.1f, -0.4f, -1.57f, -0.1f, 1);
-	arms.emplace_back(mat0, 0.5f, 0.1f, 0.0f, -1.57f, 1.57f, 0);
-	arms.emplace_back(mat1, 0.2f, 0.1f, 0.0f, -1.57f, 1.57f, 1);
-	arms.emplace_back(mat1, 0.3f, 0.1f, 0.0f, -1.57f, 1.57f, 1);
+	//Material matShared = Material(ColorRGBA(0.6f, 0.6f, 0.6f, 1), 1, 0, 0, 10, -1);
+	//Material mat0 = Material(ColorRGBA(0.8f, 0.2f, 0.2f, 1), 1, 0, 0, 10, -1);
+	//Material mat1 = Material(ColorRGBA(0.1f, 0.2f, 0.8f, 1), 1, 0, 0, 10, -1);
+	//arms.emplace_back(matShared, 0.4f, 0.1f, 0.6f, -1.57f, 1.57f, -1);
+	//arms.emplace_back(matShared, 0.4f, 0.1f, 0.0f, -1.57f, 1.57f, -1);
+	//arms.emplace_back(mat0, 0.4f, 0.1f, 0.4f, 0.1f, 1.57f, 0);
+	//arms.emplace_back(mat1, 0.4f, 0.1f, -0.4f, -1.57f, -0.1f, 1);
+	//arms.emplace_back(mat0, 0.5f, 0.1f, 0.0f, -1.57f, 1.57f, 0);
+	//arms.emplace_back(mat1, 0.2f, 0.1f, 0.0f, -1.57f, 1.57f, 1);
+	//arms.emplace_back(mat1, 0.3f, 0.1f, 0.0f, -1.57f, 1.57f, 1);
 
-	//armsIdx = arms.size() - 1;
+	////armsIdx = arms.size() - 1;
 
-	arms[0].SetChildren({ &arms[1] });
-	arms[1].SetChildren({ &arms[2], &arms[3] });
-	arms[2].SetChildren({ &arms[4] });
-	arms[3].SetChildren({ &arms[5] });
-	arms[5].SetChildren({ &arms[6] });
-	arms[0].ForwardPass(base.GetCenter(), 0);
+	//arms[0].SetChildren({ &arms[1] });
+	//arms[1].SetChildren({ &arms[2], &arms[3] });
+	//arms[2].SetChildren({ &arms[4] });
+	//arms[3].SetChildren({ &arms[5] });
+	//arms[5].SetChildren({ &arms[6] });
+	//arms[0].ForwardPass(base.GetCenter(), 0);
+
+	//this->arms = arms;
+
+	for (size_t i = 0; i < arms.size(); i++) {
+		std::vector<IKArm*> children;
+		for (auto j : armChildren[i]) {
+			children.push_back(&arms[j]);
+		}
+		arms[i].SetChildren(children);
+	}
+
+	arms[0].ForwardPass(base.GetCenter(), base.GetTheta());
 
 	// Create joints to render
 	joints.reserve(arms.size() - 1);
@@ -41,8 +53,8 @@ void IKRobot::MoveTowards(const std::vector<Pos2F>& points, float dt)
 		eds.clear();
 		eds.reserve(endpoints.size());
 
-		for (auto& i : endpoints) {
-			eds.push_back({ i.first, points[i.second] });
+		for (auto& j : endpoints) {
+			eds.push_back({ j.first, points[j.second] });
 		}
 
 		arms[i].UpdateTheta(eds, dt);
@@ -52,7 +64,7 @@ void IKRobot::MoveTowards(const std::vector<Pos2F>& points, float dt)
 	// endpoints/eds will be for arms[0]
 	base.UpdateOrientation(eds, dt);
 
-	arms[0].ForwardPass(base.GetCenter(), 0);
+	arms[0].ForwardPass(base.GetCenter(), base.GetTheta());
 }
 
 bool IKRobot::IsAtPosition(const std::vector<Pos2F>& points, float dist) const
@@ -66,42 +78,6 @@ bool IKRobot::IsAtPosition(const std::vector<Pos2F>& points, float dist) const
 
 	return true;
 }
-
-//void IKRobot::StepTowards(const std::vector<Pos3F>& points)
-//{
-//	// Move Base
-//	if (armsIdx == arms.size()) {
-//		auto endpoints = arms[0].GetEndpoints();
-//		std::vector<std::pair<const Pos3F&, const Pos3F&>> eds;
-//		eds.reserve(endpoints.size());
-//
-//		for (auto& i : endpoints) {
-//			eds.push_back({ i.first, points[i.second] });
-//		}
-//		base.UpdateOrientation(eds);
-//	}
-//	// Move Arms
-//	else { 
-//		auto endpoints = arms[armsIdx].GetEndpoints();
-//		std::vector<std::pair<const Pos3F&, const Pos3F&>> eds;
-//		eds.reserve(endpoints.size());
-//
-//		for (auto& i : endpoints) {
-//			eds.push_back({ i.first, points[i.second] });
-//		}
-//
-//		arms[armsIdx].UpdateTheta(eds);
-//	}
-//	
-//	if (armsIdx == 0) {
-//		armsIdx = arms.size();
-//	}
-//	else {
-//		armsIdx--;
-//	}
-//
-//	arms[0].ForwardPass(base.get_center(), 0);
-//}
 
 void IKRobot::RenderRobot(Renderer& renderer)
 {

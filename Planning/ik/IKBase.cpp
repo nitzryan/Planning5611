@@ -5,8 +5,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-const float MAX_TRANS_SPEED = 0.1f;
-const float MAX_ROT_SPEED = 0.2f;
+const float MAX_TRANS_SPEED = 0.5f;
+const float MAX_ROT_SPEED = 0.5f;
 
 IKBase::IKBase(const Pos2F& center, float radius, float theta, const Material& material) :
 	CircleRenderable(center, radius, material),

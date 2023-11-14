@@ -147,6 +147,12 @@
     <ClInclude Include="crowd\CrowdSim.h">
       <Filter>crowd</Filter>
     </ClInclude>
+    <ClInclude Include="scene\RobotScene1.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\RobotScene2.h">
+      <Filter>scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad.c">
