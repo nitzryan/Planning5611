@@ -34,6 +34,18 @@ struct Pos2F {
     static Vec2F SubtractBFromA(const Pos2F& a, const Pos2F& b) {
         return Vec2F(a.x - b.x, a.y - b.y);
     }
+
+    Vec2F operator-(const Pos2F& p) const {
+        return Subtract(p);
+    }
+
+    Pos2F operator-(const Vec2F& v) const {
+        return Pos2F(x - v.x, y - v.y);
+    }
+
+    Pos2F operator+(const Vec2F& v) const {
+        return Pos2F::Add(*this, v);
+    }
 };
 
 #endif

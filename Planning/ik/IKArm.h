@@ -1,19 +1,20 @@
 #pragma once
-#include "../rendering/PlaneRenderable.h"
+#include "../rendering/RectRenderable.h"
+#include "../geometry/Pos2F.h"
 #include <vector>
 
 class IKArm :
-    public PlaneRenderable
+    public RectRenderable
 {
 public:
     IKArm(const Material& mat, float length, float width, float startTheta, float thetaMin, float thetaMax, int endpointIdx);
     void SetChildren(const std::vector<IKArm*> c) { children = c; }
-    void UpdateTheta(const std::vector<std::pair<const Pos3F&, const Pos3F&>>& eds, float dt);
+    void UpdateTheta(const std::vector<std::pair<const Pos2F&, const Pos2F&>>& eds, float dt);
     void ForwardPassFromCurrent();
-    void ForwardPass(const Pos3F& newPos, float startDir);
-    Pos3F GetEndPos() const { return endPos; }
-    Pos3F GetBasePos() const { return pos; }
-    std::vector<std::pair<Pos3F, int>> GetEndpoints() const;
+    void ForwardPass(const Pos2F& newPos, float startDir);
+    Pos2F GetEndPos() const { return endPos; }
+    Pos2F GetBasePos() const { return pos; }
+    std::vector<std::pair<Pos2F, int>> GetEndpoints() const;
     int GetEndpointIdx() const { return endpointIdx; }
     float GetLength() const { return length; }
 
@@ -26,8 +27,8 @@ private:
     float theta;
     float startDir;
     int endpointIdx;
-    Pos3F pos;
-    Pos3F endPos;
+    Pos2F pos;
+    Pos2F endPos;
     std::vector<IKArm*> children;
 };
 

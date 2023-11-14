@@ -5,7 +5,7 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-CircleRenderable::CircleRenderable(Pos3F center, float radius, const Material& mat) :
+CircleRenderable::CircleRenderable(Pos2F center, float radius, const Material& mat) :
 	center(center),
 	radius(radius),
 	material(mat),
@@ -34,10 +34,10 @@ void CircleRenderable::GenerateRenderPoints()
 {
 	renderPoints.clear();
 	renderPoints.reserve(CircleRenderable::NumPoints());
-	renderPoints.emplace_back(center.x, center.y, center.z);
+	renderPoints.emplace_back(center.x, center.y);
 	float thetaStep = 2 * (float)M_PI / thetaSlices;
 	for (int i = 0; i <= thetaSlices; i++) {
 		float theta = i * thetaStep;
-		renderPoints.emplace_back(center.x + radius * cosf(theta), center.y + radius * sinf(theta), center.z);
+		renderPoints.emplace_back(center.x + radius * cosf(theta), center.y + radius * sinf(theta));
 	}
 }

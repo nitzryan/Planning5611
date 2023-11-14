@@ -165,8 +165,8 @@ int main(int, char**) {
 
 		if (input.lctrl) {
 			input.lctrl = false;
-			//scene.Update(3.0f * frameTime);
-			crowdSim.Update(frameTime);
+			//scene.Update(9.0f * frameTime);
+			
 		}
 
 		MoveCamera(input, camera, frameTime);
@@ -174,6 +174,7 @@ int main(int, char**) {
 
 		//scene.Update(frameTime);
 		//scene.Render(renderer);
+		crowdSim.Update(frameTime);
 		crowdSim.Render(renderer);
 
 		renderer.FinalizeFrame();

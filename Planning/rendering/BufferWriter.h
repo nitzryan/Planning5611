@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../geometry/Pos3F.h"
+#include "../geometry/Pos2F.h"
 #include "ColorRGBA.h"
 #include <vector>
 
@@ -23,5 +24,10 @@ public:
 		vbo[vboLoc + 10] = texX;
 		vbo[vboLoc + 11] = texY;
 		vboLoc += 12;
+	}
+
+	static void AddPoint(std::vector<float>& vbo, unsigned int& vboLoc,
+		const Pos2F& p, const ColorRGBA& c, const Vec3F& n, float texX, float texY) {
+		AddPoint(vbo, vboLoc, Pos3F(p.x, p.y, 0), c, n, texX, texY);
 	}
 };

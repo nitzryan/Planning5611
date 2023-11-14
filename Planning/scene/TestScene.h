@@ -9,8 +9,8 @@ class TestScene : public IScene {
 public:
 	TestScene() :
 		robot(),
-		circle0(Pos3F(0.2f, -0.8f, 0), 0.05f, Material(ColorRGBA(0.8f, 0.2f, 0.2f, 1), 1, 0, 0, 10, -1)),
-		circle1(Pos3F(-0.2f, -0.8f, 0), 0.05f, Material(ColorRGBA(0.1f, 0.2f, 0.8f, 1), 1, 0, 0, 10, -1))
+		circle0(Pos2F(0.2f, -0.8f), 0.05f, Material(ColorRGBA(0.8f, 0.2f, 0.2f, 1), 1, 0, 0, 10, -1)),
+		circle1(Pos2F(-0.2f, -0.8f), 0.05f, Material(ColorRGBA(0.1f, 0.2f, 0.8f, 1), 1, 0, 0, 10, -1))
 	{
 		mt = std::mt19937(5611);
 	}
@@ -32,8 +32,8 @@ public:
 
 		float mag;
 		do {
-			circle0.SetCenter(Pos3F(r(mt), r(mt), 0.0f));
-			circle1.SetCenter(Pos3F(r(mt), r(mt), 0.0f));
+			circle0.SetCenter(Pos2F(r(mt), r(mt)));
+			circle1.SetCenter(Pos2F(r(mt), r(mt)));
 			mag = (circle0.GetCenter() - circle1.GetCenter()).GetMagnitude();
 		} while (mag > robot.GetMaxReach());
 	}

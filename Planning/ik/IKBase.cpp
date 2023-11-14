@@ -8,13 +8,13 @@
 const float MAX_TRANS_SPEED = 0.1f;
 const float MAX_ROT_SPEED = 0.2f;
 
-IKBase::IKBase(const Pos3F& center, float radius, float theta, const Material& material) :
+IKBase::IKBase(const Pos2F& center, float radius, float theta, const Material& material) :
 	CircleRenderable(center, radius, material),
 	theta(theta)
 {
 }
 
-void IKBase::Move(const Vec3F& v)
+void IKBase::Move(const Vec2F& v)
 {
 	center.Add(v);
 	GenerateRenderPoints();
@@ -31,10 +31,10 @@ void IKBase::Rotate(float t)
 	}
 }
 
-void IKBase::UpdateOrientation(const std::vector<std::pair<const Pos3F&, const Pos3F&>>& eds, float dt)
+void IKBase::UpdateOrientation(const std::vector<std::pair<const Pos2F&, const Pos2F&>>& eds, float dt)
 {
 	// Translate
-	Vec3F totalDelta = Vec3F(0, 0, 0);
+	Vec2F totalDelta = Vec2F(0, 0);
 	for (auto& i : eds) {
 		totalDelta.Add(i.second - i.first);
 	}
@@ -43,7 +43,7 @@ void IKBase::UpdateOrientation(const std::vector<std::pair<const Pos3F&, const P
 
 	if (totalDelta.GetMagnitude() > dt * MAX_TRANS_SPEED) {
 		totalDelta.Normalize();
-		Move(Vec3F::Mul(totalDelta, MAX_TRANS_SPEED * dt));
+		Move(Vec2F::Mul(totalDelta, MAX_TRANS_SPEED * dt));
 	}
 	else { // Entire movement possible with speed constraints
 		Move(totalDelta);
@@ -52,11 +52,11 @@ void IKBase::UpdateOrientation(const std::vector<std::pair<const Pos3F&, const P
 	// Rotate
 	float deltaTheta = 0;
 	for (auto& ed : eds) {
-		Vec3F RE = ed.first.Subtract(center);
-		Vec3F RD = ed.second.Subtract(center);
+		Vec2F RE = ed.first.Subtract(center);
+		Vec2F RD = ed.second.Subtract(center);
 		RE.Normalize();
 		RD.Normalize();
-		float dot = Vec3F::Dot(RE, RD);
+		float dot = Vec2F::Dot(RE, RD);
 		if (dot > 1.0f) { // Numerical error can cause acosf to return NaN
 			dot = 1.0f;
 		}
@@ -108,8 +108,8 @@ void IKBase::Render(std::vector<float>& vbo, unsigned int vboLoc, unsigned int p
 	// Add triangle to VBO
 	ColorRGBA lookColor = ColorRGBA(0.9f, 0.9f, 0.9f, 1.0f);
 	BufferWriter::AddPoint(vbo, vboLoc, center, lookColor, Vec3F(0, 0, 1), -1.0f, -1.0f);
-	BufferWriter::AddPoint(vbo, vboLoc, Pos3F::Add(center, Vec3F::Mul(Vec3F(cosf(theta - 0.25f), sinf(theta - 0.25f), 0), radius)), lookColor, Vec3F(0, 0, 1), -1.0f, -1.0f);
-	BufferWriter::AddPoint(vbo, vboLoc, Pos3F::Add(center, Vec3F::Mul(Vec3F(cosf(theta + 0.25f), sinf(theta + 0.25f), 0), radius)), lookColor, Vec3F(0, 0, 1), -1.0f, -1.0f);
+	BufferWriter::AddPoint(vbo, vboLoc, Pos2F::Add(center, Vec2F::Mul(Vec2F(cosf(theta - 0.25f), sinf(theta - 0.25f)), radius)), lookColor, Vec3F(0, 0, 1), -1.0f, -1.0f);
+	BufferWriter::AddPoint(vbo, vboLoc, Pos2F::Add(center, Vec2F::Mul(Vec2F(cosf(theta + 0.25f), sinf(theta + 0.25f)), radius)), lookColor, Vec3F(0, 0, 1), -1.0f, -1.0f);
 
 	// Adsd triangle to EBO
 	ebo[eboLoc] = pointCount;

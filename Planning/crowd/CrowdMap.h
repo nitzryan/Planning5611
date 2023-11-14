@@ -12,11 +12,15 @@ class CrowdMap
 {
 public:
 	CrowdMap(const Material& mat, std::mt19937& mt);
-	bool ValidPathBetween(const Pos3F& p1, const Pos3F& p2) const;
+	bool ValidPathBetween(const Pos2F& p1, const Pos2F& p2, float cushion) const;
 	void Render(Renderer& renderer);
+	const CrowdDest* GetRandomDest(std::mt19937& mt) const;
+	const CrowdDest* GetSpawnConditions(std::mt19937& mt, Pos2F& startPos, const CrowdNode*& startNode);
 private:
 	std::vector<CrowdNode> nodes;
 	std::vector<CrowdDest> dests;
 	RectRenderable floor;
+
+	void ConnectNodes();
 };
 

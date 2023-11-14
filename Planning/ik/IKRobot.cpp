@@ -1,7 +1,7 @@
 #include "IKRobot.h"
 
 IKRobot::IKRobot() :
-	base(Pos3F(0,0,0), 0.1f, 0.0f, Material(ColorRGBA(0.2f, 0.2f, 0.2f, 1), 1, 0, 0, 10, -1))
+	base(Pos2F(0,0), 0.1f, 0.0f, Material(ColorRGBA(0.2f, 0.2f, 0.2f, 1), 1, 0, 0, 10, -1))
 {
 	Material matShared = Material(ColorRGBA(0.6f, 0.6f, 0.6f, 1), 1, 0, 0, 10, -1);
 	Material mat0 = Material(ColorRGBA(0.8f, 0.2f, 0.2f, 1), 1, 0, 0, 10, -1);
@@ -32,10 +32,10 @@ IKRobot::IKRobot() :
 	}
 }
 
-void IKRobot::MoveTowards(const std::vector<Pos3F>& points, float dt)
+void IKRobot::MoveTowards(const std::vector<Pos2F>& points, float dt)
 {
-	std::vector<std::pair<Pos3F, int>> endpoints;
-	std::vector<std::pair<const Pos3F&, const Pos3F&>> eds;
+	std::vector<std::pair<Pos2F, int>> endpoints;
+	std::vector<std::pair<const Pos2F&, const Pos2F&>> eds;
 	for (int i = (int)arms.size() - 1; i >= 0; i--) {
 		endpoints = arms[i].GetEndpoints();
 		eds.clear();
@@ -55,7 +55,7 @@ void IKRobot::MoveTowards(const std::vector<Pos3F>& points, float dt)
 	arms[0].ForwardPass(base.GetCenter(), 0);
 }
 
-bool IKRobot::IsAtPosition(const std::vector<Pos3F>& points, float dist) const
+bool IKRobot::IsAtPosition(const std::vector<Pos2F>& points, float dist) const
 {
 	auto endpoints = arms[0].GetEndpoints();
 	for (size_t i = 0; i < endpoints.size(); i++) {

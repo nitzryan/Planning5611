@@ -9,14 +9,14 @@ class CrowdPerson :
     public CircleRenderable
 {
 public:
-    CrowdPerson(Pos3F start, const Material& mat, const CrowdNode* startNode, const CrowdDest& dest, const CrowdMap& crowdMap);
+    CrowdPerson(Pos2F start, const Material& mat, const CrowdNode* startNode, const CrowdDest* dest, const CrowdMap* crowdMap);
     float GetDistFrom(const CrowdPerson& p) const;
     void Update(float dt, const std::vector<CrowdPerson>& people);
     bool ReadyToRecycle() const;
 private:
-    Vec3F vel;
-    const CrowdDest& dest;
-    const CrowdMap& crowdMap;
+    Vec2F vel;
+    const CrowdDest* dest;
+    const CrowdMap* crowdMap;
 
     std::vector<const CrowdNode*> traversalNodes;
     size_t currentNode;

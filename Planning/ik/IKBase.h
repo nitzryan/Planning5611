@@ -5,10 +5,10 @@ class IKBase :
     public CircleRenderable
 {
 public:
-    IKBase(const Pos3F& center, float radius, float theta, const Material& material);
-    void Move(const Vec3F& v);
+    IKBase(const Pos2F& center, float radius, float theta, const Material& material);
+    void Move(const Vec2F& v);
     void Rotate(float theta);
-    void UpdateOrientation(const std::vector<std::pair<const Pos3F&, const Pos3F&>>& eds, float theta);
+    void UpdateOrientation(const std::vector<std::pair<const Pos2F&, const Pos2F&>>& eds, float theta);
     float GetTheta() const { return theta; }
 
     // Rendering Overrides

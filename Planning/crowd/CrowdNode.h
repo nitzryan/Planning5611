@@ -7,7 +7,7 @@ class CrowdNode :
     public CircleRenderable
 {
 public:
-    CrowdNode(Pos3F p, const Material& mat);
+    CrowdNode(Pos2F p, const Material& mat);
     static int NextId;
     int GetId() const { return id; }
     std::vector<const CrowdNode*> GetConnectedNodes() const { return connectedNodes; }

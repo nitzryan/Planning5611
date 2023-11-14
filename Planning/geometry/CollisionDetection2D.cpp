@@ -36,6 +36,8 @@ bool CollisionBetween(const Line2F& l1, const Line2F& l2, Pos2F& colPoint) {
     float x = ((p1.x * p2.y - p1.y * p2.x) * x3mx4 - (p3.x * p4.y - p3.y * p4.x) * x1mx2) / det;
     float y = ((p1.x * p2.y - p1.y * p2.x) * y3my4 - (p3.x * p4.y - p3.y * p4.x) * y1my2) / det;
     colPoint = Pos2F(x, y);
+
+    return true;
 }
 
 //bool CollisionBetween(const Line2F& l1, const Circle& c2) {

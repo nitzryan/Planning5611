@@ -1,7 +1,7 @@
 #include "RectRenderable.h"
 #include "BufferWriter.h"
 
-RectRenderable::RectRenderable(Pos3F ul, Pos3F ur, Pos3F ll, Pos3F lr, const Material& mat) :
+RectRenderable::RectRenderable(Pos2F ul, Pos2F ur, Pos2F ll, Pos2F lr, const Material& mat) :
 	ul(ul), ur(ur), ll(ll), lr(lr), material(mat)
 {
 }
@@ -38,7 +38,7 @@ void RectRenderable::Render(std::vector<float>& vbo, unsigned int vboLoc, unsign
 	ebo[eboLoc] = pointCount + 2;
 }
 
-bool RectRenderable::PointInRect(const Pos3F& p) const
+bool RectRenderable::PointInRect(const Pos2F& p) const
 {
-	return false;
+	return (p.x > ul.x) && (p.x < ur.x) && (p.y > ll.y) && (p.y < ur.y);
 }
