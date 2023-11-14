@@ -12,6 +12,8 @@ public:
 	void Render(std::vector<float>& vbo, unsigned int vboLoc, unsigned int pointCount, std::vector<unsigned int>& ebo, unsigned int eboLoc) override;
 	bool PointInRect(const Pos2F& p) const;
 	Material GetMaterial() const override { return material; }
+	Pos2F GetUR() const { return ur; }
+	Pos2F GetLL() const { return ll; }
 protected:
 	Material material;
 	Pos2F ul, ur, ll, lr;

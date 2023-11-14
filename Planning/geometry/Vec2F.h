@@ -20,12 +20,20 @@ struct Vec2F {
         y += v.y;
     }
 
+    Vec2F operator+(const Vec2F& v) const {
+        return Vec2F::Add(*this, v);
+    }
+
     static Vec2F Sub(const Vec2F& v1, const Vec2F& v2) {
         return Vec2F(v1.x - v2.x, v1.y - v2.y);
     }
     void Sub(const Vec2F& v) {
         x -= v.x;
         y -= v.y;
+    }
+
+    Vec2F operator-(const Vec2F& v) const {
+        return Vec2F::Sub(*this, v);
     }
 
     static Vec2F Mul(const Vec2F& v, float m) {

@@ -1,5 +1,12 @@
 #include "CrowdPerson.h"
 #include <iostream>
+#include <assert.h>
+#include "../geometry/CollisonDetection2D.h"
+
+const float WALKING_SPEED = 0.5f;
+const float TTC_TIME_CUTOFF = 1.5f;
+const float TTC_DIST_CUTOFF = TTC_TIME_CUTOFF * WALKING_SPEED;
+const float TTC_DIST_CUTTOFF_SQUARED = TTC_DIST_CUTOFF * TTC_DIST_CUTOFF;
 
 CrowdPerson::CrowdPerson(Pos2F start, const Material& mat, const CrowdNode* startNode, const CrowdDest* dest, const CrowdMap* crowdMap) :
 	CircleRenderable(start, 0.125f, mat),
@@ -37,10 +44,20 @@ float CrowdPerson::GetDistFrom(const CrowdPerson& p) const
 	return (center - p.center).GetMagnitude();
 }
 
-void CrowdPerson::Update(float dt, const std::vector<CrowdPerson>& people)
+void CrowdPerson::CalculateDirection()
 {
 	if (ReadyToRecycle() || traversalNodes.empty()) { // In Destination
 		return;
+	}
+
+	// Make sure can still walk towards point
+	if (!crowdMap->ValidPathBetween(center, traversalNodes[currentNode]->GetCenter(), radius)) {
+		if (currentNode > 0) {
+			currentNode--;
+		}
+		else {
+			currentNode = 1; // Handle getting evicted at spawn
+		}
 	}
 
 	// Check to see if can move further down the list
@@ -53,14 +70,177 @@ void CrowdPerson::Update(float dt, const std::vector<CrowdPerson>& people)
 		}
 	}
 
-	// Add stuff to avoid people later
-
+	// Walk towards target
 	vel = traversalNodes[currentNode]->GetCenter() - center;
 	vel.Normalize();
-	vel.Mul(0.50f);
+	vel.Mul(WALKING_SPEED);
+}
 
+void CrowdPerson::ComputeTTC(std::vector<CrowdPerson>& people, size_t startIdx, float dt)
+{
+	for (size_t i = startIdx; i < people.size(); i++) {
+		if (people[i].ReadyToRecycle()) { // Person exists in memory, but not on the map
+			continue;
+		}
+		
+		// Self should be startIdx - 1, so don't need to check for self
+
+		CrowdPerson& p = people[i];
+		Vec2F w = center - p.center;
+
+		if (w.GetMagnitudeSquared() >= TTC_DIST_CUTTOFF_SQUARED) { // To far away to consider
+			continue;
+		}
+
+		Vec2F v = (vel - p.vel);
+		if (w.GetMagnitude() < 2 * radius) {
+			// Get Direction of collision vector
+			float magDir = w.GetMagnitude();
+			w.Normalize();
+			// Reflect velocities across this vector
+			/*float v1Perp = Vec2F::Dot(vel, w);
+			float v2Perp = Vec2F::Dot(p.vel, w);
+			float vPerp = v1Perp - v2Perp;
+			vPerp /= 2;
+
+			vel.Add(Vec2F::Mul(w, -vPerp));
+			p.vel.Add(Vec2F::Mul(w, vPerp));*/
+			vel = Vec2F(0, 0);
+			p.vel = Vec2F(0, 0);
+
+			w.Mul(0.01f + (2 * radius - magDir));
+
+			center = center + w;
+			p.center = p.center - w;
+
+			continue;
+		}
+
+		// Do Quadratic equation
+		float a = Vec2F::Dot(v, v);
+		if (a == 0) {
+			continue;
+		}
+		float b = Vec2F::Dot(w, v);
+		float radWBuffer = radius + 0.01f;
+		float c = Vec2F::Dot(w, w) - 4 * radWBuffer * radWBuffer; // Assume both radiuses are the same, (Ra + Rb)^2 actually
+
+		float det = b * b - a * c;
+		if (det < 0) { // They never collide
+			continue;
+		}
+
+		float t1 = (-b - det) / (a);
+		float t2 = (-b + det) / (a);
+
+		if (t1 < 0 && t2 < 0) { // Collision if time moves backwards
+			continue;
+		}
+
+		if (t1 < 0 || t2 < 0) { // Currently inside of buffer, but not actually colliding
+			t1 = std::max(t1, t2);
+			t2 = std::max(t1, t2);
+		}
+
+		// Must have 2 positive
+		float t = std::min(t1, t2);
+		if (t > TTC_TIME_CUTOFF) {
+			continue;
+		}
+
+		if (t == 0) {
+			t = 0.01f;
+		}
+
+		// Fast forward to collision
+		Pos2F thisColPoint = center + Vec2F::Mul(vel, t);
+		Pos2F otherColPoint = p.center + Vec2F::Mul(p.vel, t);
+		Vec2F dir = thisColPoint - otherColPoint;
+		Vec2F magDir = dir.GetNormalized();
+
+		float fAvoid = (TTC_TIME_CUTOFF - t) / t; // Know that t != 0, as it would be caught by the collision check
+		fAvoid /= dir.GetMagnitude();
+		dir.Mul(fAvoid * dt);
+		vel = vel + dir;
+		p.vel = p.vel - dir;
+
+		// Make sure walking speed doesn't go above max
+		float velMag = vel.GetMagnitude();
+		float pVelMag = p.vel.GetMagnitude();
+		if (velMag > WALKING_SPEED) {
+			vel.Mul(WALKING_SPEED / velMag);
+		}
+		if (pVelMag > WALKING_SPEED) {
+			p.vel.Mul(WALKING_SPEED / pVelMag);
+		}
+	}
+}
+
+void CrowdPerson::Move(float dt)
+{
 	center.Add(Vec2F::Mul(vel, dt));
 	CircleRenderable::GenerateRenderPoints();
+}
+
+void CrowdPerson::AvoidWall(const RectRenderable& rect, float dt)
+{
+	auto ll = rect.GetLL();
+	auto ur = rect.GetUR();
+
+	auto closestPoint = Pos2F(
+	    clamp(ll.x, ur.x, center.x),
+	    clamp(ll.y, ur.y, center.y)
+	);
+	
+	Vec2F vec = Vec2F(0, 0);
+	vec = center - closestPoint;
+	if (vec.x != vec.x) {
+		vec.x = vec.x;
+	}
+	auto dist = vec.GetMagnitude();
+
+	if (dist > 2 * radius) { // Too far away to concern
+		return;
+	}	
+
+	if (dist == 0) { // Completely inside
+		float distLeft = abs(ll.x - center.x);
+		float distRight = abs(ur.x - center.x);
+		float distTop = abs(ur.y - center.y);
+		float distBot = abs(ll.y - center.y);
+		if (distLeft < distRight && distLeft < distTop && distLeft < distBot) {
+			center.x = ll.x - radius - 0.01f;
+		}
+		else if (distRight < distTop && distRight < distBot) {
+			center.x = ur.x + radius + 0.01f;
+		}
+		else if (distTop < distBot) {
+			center.y = ur.y + radius + 0.01f;
+		}
+		else {
+			center.y = ll.y - radius - 0.01f;
+		}
+		return;
+	}
+	vec.Normalize();
+	if (dist < radius) { // Colliding
+		float disp = radius + 0.01f - dist;
+		center = center + Vec2F::Mul(vec, disp);
+		if (center.x != center.x) {
+			center.x = center.x;
+		}
+	}
+	else { // Not colliding, but force away
+		float disp = dist - radius;
+		float fAvoid = (radius - disp) / disp;
+		fAvoid *= dt;
+		vel = vel + Vec2F::Mul(vec, fAvoid);
+
+		float velMag = vel.GetMagnitude();
+		if (velMag > WALKING_SPEED) {
+			vel.Mul(WALKING_SPEED / velMag);
+		}
+	}
 }
 
 bool CrowdPerson::ReadyToRecycle() const

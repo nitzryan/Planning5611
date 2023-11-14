@@ -90,6 +90,9 @@ void CrowdMap::Render(Renderer& renderer)
 		}
 	}
 	for (auto& i : dests) {
+		i.Render(renderer);
+	}
+	for (auto& i : dests) {
 		renderer.Render(i);
 	}
 
@@ -114,6 +117,20 @@ const CrowdDest* CrowdMap::GetSpawnConditions(std::mt19937& mt, Pos2F& startPos,
 	startPos = dests[startDest].GetSpawnPos(mt);
 	startNode = &nodes[startDest * 2 + 1];
 	return &dests[endDest];
+}
+
+std::vector<const RectRenderable*> CrowdMap::GetWalls() const
+{
+	std::vector<const RectRenderable*> walls;
+	walls.reserve(dests.size() * 5);
+	for (auto& i : dests) {
+		auto destWalls = i.GetWalls();
+		for (auto& j : destWalls) {
+			walls.push_back(j);
+		}
+	}
+
+	return walls;
 }
 
 void CrowdMap::ConnectNodes()
