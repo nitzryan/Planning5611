@@ -144,6 +144,8 @@ int main(int, char**) {
 	IKArm::IgnoreJointLimits = true;
 	input.toggleJointLimits = true; // So that it outputs to console on load
 
+	std::cout << "Hit Left-Control to Progress Simulation\n";
+
 	while (!input.quit) {
 		// Keyboard events
 		int newSceneId = GetInput(input, windowEvent);
