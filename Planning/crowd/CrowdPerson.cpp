@@ -4,11 +4,11 @@
 #include "../geometry/CollisonDetection2D.h"
 
 const float WALKING_SPEED = 0.5f;
-const float TTC_TIME_CUTOFF = 1.5f;
+const float TTC_TIME_CUTOFF = 2.5f;
 const float TTC_DIST_CUTOFF = TTC_TIME_CUTOFF * WALKING_SPEED;
 const float TTC_DIST_CUTTOFF_SQUARED = TTC_DIST_CUTOFF * TTC_DIST_CUTOFF;
 
-const float WALL_AVOID_FACTOR = 0.15f;
+const float WALL_AVOID_FACTOR = 0.35f;
 const float AVOIDANCE_DIST = 0.07f;
 const float AVOIDANCE_MAG = 0.25f;
 
@@ -55,14 +55,14 @@ void CrowdPerson::CalculateDirection(float dt)
 	}
 
 	//// Make sure can still walk towards point
-	//if (!crowdMap->ValidPathBetween(center, traversalNodes[currentNode]->GetCenter(), radius)) {
-	//	if (currentNode > 0) {
-	//		currentNode--;
-	//	}
-	//	else {
-	//		currentNode = 1; // Handle getting evicted at spawn
-	//	}
-	//}
+	if (!crowdMap->ValidPathBetween(center, traversalNodes[currentNode]->GetCenter(), radius)) {
+		if (currentNode > 0) {
+			currentNode--;
+		}
+		else {
+			currentNode = 1; // Handle getting evicted at spawn
+		}
+	}
 
 	// Check to see if can move further down the list
 	for (size_t i = currentNode + 1; i < traversalNodes.size(); i++) {
@@ -122,11 +122,17 @@ void CrowdPerson::ComputeTTC(std::vector<CrowdPerson>& people, size_t startIdx, 
 			center = center + w;
 			p.center = p.center - w;
 
+			// Set velocity to seperate
+			w.Normalize();
+			w.Mul(0.01f);
+			vel = w;
+			p.vel = Vec2F::Mul(w, -1);
+
 			continue;
 		}
 
-		// Add avoidance force, to prevent walking right next to another
-		// If vel is same direction, TTC will not impact walking dist
+		//// Add avoidance force, to prevent walking right next to another
+		//// If vel is same direction, TTC will not impact walking dist
 		if (w.GetMagnitude() < 2 * radius + AVOIDANCE_DIST) {
 			Vec2F wNorm = w.GetNormalized();
 			float f = 2 * radius + AVOIDANCE_DIST - w.GetMagnitude();

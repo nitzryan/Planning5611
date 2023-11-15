@@ -1,6 +1,7 @@
 #include "CrowdMap.h"
 
 const int RAND_NODES = 50;
+bool CrowdMap::RenderNodes = true;
 
 CrowdMap::CrowdMap(const Material& mat, std::mt19937& mt, std::vector<CrowdDest> destinations) :
 	dests(destinations), floor(Pos2F(-6.25f, 6.25f), Pos2F(6.25f, 6.25f), Pos2F(-6.25f, -6.25f), Pos2F(6.25f, -6.25f), mat)
@@ -40,11 +41,15 @@ CrowdMap::CrowdMap(const Material& mat, std::mt19937& mt, std::vector<CrowdDest>
 			float y = nodeDist(mt);
 
 			p = Pos2F(x, y);
+			auto pLeft = p + Vec2F(-0.2f, 0);
+			auto pRight = p + Vec2F(0.2f, 0);
+			auto pUp = p + Vec2F(0, 0.2f);
+			auto pDown = p + Vec2F(0, -0.2f);
 
 			// Check that it doesn't intersect
 
 			for (auto& d : dests) {
-				if (d.IsInDest(p)) {
+				if (d.IsInDest(p) || d.IsInDest(pLeft) || d.IsInDest(pRight) || d.IsInDest(pUp) || d.IsInDest(pDown)) {
 					intersects = true;
 					break;
 				}
@@ -74,22 +79,25 @@ bool CrowdMap::ValidPathBetween(const Pos2F& p1, const Pos2F& p2, float cushion)
 
 void CrowdMap::Render(Renderer& renderer)
 {
-	for (auto& i : nodes) {
-		renderer.Render(i);
-	}
+	if (CrowdMap::RenderNodes) {
+		for (auto& i : nodes) {
+			renderer.Render(i);
+		}
 
-	Material lineMaterial = Material(ColorRGBA(0.1f, 0.1f, 0.1f, 0.3f), 1.0f, 0.0f, 0.0f, 10.0f, -1);
-	for (auto& i : nodes) {
-		auto children = i.GetConnectedNodes();
-		for (auto j : children) {
-			auto dir = (i.GetCenter() - j->GetCenter());
-			Vec2F w = Vec2F(-dir.y, dir.x);
-			w.Normalize();
-			w.Mul(0.01f);
-			RectRenderable r = RectRenderable(i.GetCenter() + w, i.GetCenter() - w, j->GetCenter() + w, j->GetCenter() - w, lineMaterial);
-			renderer.Render(r);
+		Material lineMaterial = Material(ColorRGBA(0.1f, 0.1f, 0.8f, 0.3f), 1.0f, 0.0f, 0.0f, 10.0f, -1);
+		for (auto& i : nodes) {
+			auto children = i.GetConnectedNodes();
+			for (auto j : children) {
+				auto dir = (i.GetCenter() - j->GetCenter());
+				Vec2F w = Vec2F(-dir.y, dir.x);
+				w.Normalize();
+				w.Mul(0.01f);
+				RectRenderable r = RectRenderable(i.GetCenter() + w, i.GetCenter() - w, j->GetCenter() + w, j->GetCenter() - w, lineMaterial);
+				renderer.Render(r);
+			}
 		}
 	}
+	
 	for (auto& i : dests) {
 		i.Render(renderer);
 	}
@@ -145,7 +153,7 @@ void CrowdMap::ConnectNodes()
 		for (size_t j = i + 1; j < nodes.size(); j++) {
 			float dist = (nodes[i].GetCenter() - nodes[j].GetCenter()).GetMagnitude();
 			if (dist < 4.0f) {
-				if (ValidPathBetween(nodes[i].GetCenter(), nodes[j].GetCenter(), 0.125f)) {
+				if (ValidPathBetween(nodes[i].GetCenter(), nodes[j].GetCenter(), 0.2f)) {
 					nodes[i].ConnectNode(&nodes[j]);
 					nodes[j].ConnectNode(&nodes[i]);
 				}

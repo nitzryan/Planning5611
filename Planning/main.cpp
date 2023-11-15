@@ -10,7 +10,6 @@
 #include "rendering/Renderer.h"
 #include "scene/RobotScene1.h"
 #include "scene/RobotScene2.h"
-//#include "crowd/CrowdSim.h"
 #include "scene/CrowdScene3.h"
 #include "scene/CrowdScene4.h"
 
@@ -30,6 +29,12 @@ struct UserInput {
 	bool lctrl = false;
 	bool quit = false;
 	bool toggleJointLimits = false;
+	float mouseX = 0.0f;
+	float mouseY = 0.0f;
+	bool mouseMoved = false;
+	bool mousePressed = false;
+	bool mouseDepressed = false;
+	bool toggleShowNodes = false;
 };
 
 int GetInput(UserInput& input, SDL_Event& windowEvent) {
@@ -68,6 +73,19 @@ int GetInput(UserInput& input, SDL_Event& windowEvent) {
 			scene = 4;
 		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_j)
 			input.toggleJointLimits = true;
+		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_n)
+			input.toggleShowNodes = true;
+		if (windowEvent.type == SDL_MOUSEMOTION) {
+			input.mouseMoved = true;
+			input.mouseX = (float)(windowEvent.motion.x) / screenDetails.width;
+			input.mouseY = (float)(windowEvent.motion.y) / screenDetails.height;
+		}
+		if (windowEvent.type == SDL_MOUSEBUTTONDOWN && windowEvent.button.button == SDL_BUTTON_LEFT) {
+			input.mousePressed = true;
+		}
+		if (windowEvent.type == SDL_MOUSEBUTTONUP && windowEvent.button.button == SDL_BUTTON_LEFT) {
+			input.mouseDepressed = true;
+		}
 	}
 
 	return scene;
@@ -161,6 +179,26 @@ int main(int, char**) {
 			IKArm::IgnoreJointLimits = !IKArm::IgnoreJointLimits;
 			input.toggleJointLimits = false;
 			std::cout << "Using Joint Limits: " << !IKArm::IgnoreJointLimits << std::endl;
+		}
+
+		if (input.toggleShowNodes) {
+			CrowdMap::RenderNodes = !CrowdMap::RenderNodes;
+			input.toggleShowNodes = false;
+		}
+
+		if (input.mouseMoved) {
+			input.mouseMoved = false;
+			scene->MouseMove(input.mouseX, input.mouseY);
+		}
+
+		if (input.mousePressed) {
+			scene->MouseDown(input.mouseX, input.mouseY);
+			input.mousePressed = false;
+		}
+
+		if (input.mouseDepressed) {
+			scene->MouseUp();
+			input.mouseDepressed = false;
 		}
 
 		auto thisFrameTime = std::chrono::high_resolution_clock::now();

@@ -18,6 +18,8 @@ public:
 	const CrowdDest* GetSpawnConditions(std::mt19937& mt, Pos2F& startPos, const CrowdNode*& startNode);
 
 	std::vector<const RectRenderable*> GetWalls() const;
+
+	static bool RenderNodes;
 private:
 	std::vector<CrowdNode> nodes;
 	std::vector<CrowdDest> dests;

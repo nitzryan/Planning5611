@@ -11,4 +11,7 @@ class IScene {
 public:
 	virtual void Update(float dt) = 0;
 	virtual void Render(Renderer& renderer) = 0;
+	virtual void MouseDown(float x, float y) {}
+	virtual void MouseUp() {}
+	virtual void MouseMove(float x, float y) {}
 };
