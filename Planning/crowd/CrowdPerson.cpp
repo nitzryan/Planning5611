@@ -8,6 +8,10 @@ const float TTC_TIME_CUTOFF = 1.5f;
 const float TTC_DIST_CUTOFF = TTC_TIME_CUTOFF * WALKING_SPEED;
 const float TTC_DIST_CUTTOFF_SQUARED = TTC_DIST_CUTOFF * TTC_DIST_CUTOFF;
 
+const float WALL_AVOID_FACTOR = 0.15f;
+const float AVOIDANCE_DIST = 0.07f;
+const float AVOIDANCE_MAG = 0.25f;
+
 CrowdPerson::CrowdPerson(Pos2F start, const Material& mat, const CrowdNode* startNode, const CrowdDest* dest, const CrowdMap* crowdMap) :
 	CircleRenderable(start, 0.125f, mat),
 	vel(0,0),
@@ -44,25 +48,25 @@ float CrowdPerson::GetDistFrom(const CrowdPerson& p) const
 	return (center - p.center).GetMagnitude();
 }
 
-void CrowdPerson::CalculateDirection()
+void CrowdPerson::CalculateDirection(float dt)
 {
 	if (ReadyToRecycle() || traversalNodes.empty()) { // In Destination
 		return;
 	}
 
-	// Make sure can still walk towards point
-	if (!crowdMap->ValidPathBetween(center, traversalNodes[currentNode]->GetCenter(), radius)) {
-		if (currentNode > 0) {
-			currentNode--;
-		}
-		else {
-			currentNode = 1; // Handle getting evicted at spawn
-		}
-	}
+	//// Make sure can still walk towards point
+	//if (!crowdMap->ValidPathBetween(center, traversalNodes[currentNode]->GetCenter(), radius)) {
+	//	if (currentNode > 0) {
+	//		currentNode--;
+	//	}
+	//	else {
+	//		currentNode = 1; // Handle getting evicted at spawn
+	//	}
+	//}
 
 	// Check to see if can move further down the list
 	for (size_t i = currentNode + 1; i < traversalNodes.size(); i++) {
-		if (crowdMap->ValidPathBetween(center, traversalNodes[i]->GetCenter(), radius)) {
+		if (crowdMap->ValidPathBetween(center, traversalNodes[i]->GetCenter(), radius * 1.5f)) {
 			currentNode = i;
 		}
 		else {
@@ -71,9 +75,15 @@ void CrowdPerson::CalculateDirection()
 	}
 
 	// Walk towards target
-	vel = traversalNodes[currentNode]->GetCenter() - center;
-	vel.Normalize();
-	vel.Mul(WALKING_SPEED);
+	Vec2F velForce = traversalNodes[currentNode]->GetCenter() - center;
+	velForce.Normalize();
+	vel = vel + Vec2F::Mul(velForce, dt);
+	
+	// Cap vel
+	float magVel = vel.GetMagnitude();
+	if (magVel > WALKING_SPEED) {
+		vel.Mul(WALKING_SPEED / magVel);
+	}
 }
 
 void CrowdPerson::ComputeTTC(std::vector<CrowdPerson>& people, size_t startIdx, float dt)
@@ -91,9 +101,8 @@ void CrowdPerson::ComputeTTC(std::vector<CrowdPerson>& people, size_t startIdx, 
 		if (w.GetMagnitudeSquared() >= TTC_DIST_CUTTOFF_SQUARED) { // To far away to consider
 			continue;
 		}
-
-		Vec2F v = (vel - p.vel);
-		if (w.GetMagnitude() < 2 * radius) {
+		
+		if (w.GetMagnitude() < 2 * radius) { // Collision
 			// Get Direction of collision vector
 			float magDir = w.GetMagnitude();
 			w.Normalize();
@@ -108,7 +117,7 @@ void CrowdPerson::ComputeTTC(std::vector<CrowdPerson>& people, size_t startIdx, 
 			vel = Vec2F(0, 0);
 			p.vel = Vec2F(0, 0);
 
-			w.Mul(0.01f + (2 * radius - magDir));
+			w.Mul(0.0050f + (2 * radius - magDir));
 
 			center = center + w;
 			p.center = p.center - w;
@@ -116,13 +125,25 @@ void CrowdPerson::ComputeTTC(std::vector<CrowdPerson>& people, size_t startIdx, 
 			continue;
 		}
 
+		// Add avoidance force, to prevent walking right next to another
+		// If vel is same direction, TTC will not impact walking dist
+		if (w.GetMagnitude() < 2 * radius + AVOIDANCE_DIST) {
+			Vec2F wNorm = w.GetNormalized();
+			float f = 2 * radius + AVOIDANCE_DIST - w.GetMagnitude();
+			wNorm.Mul(AVOIDANCE_MAG * dt * ((AVOIDANCE_DIST - f) / AVOIDANCE_DIST));
+			vel = vel + wNorm;
+			p.vel = p.vel - wNorm;
+		}
+
+		Vec2F v = (vel - p.vel);
+
 		// Do Quadratic equation
 		float a = Vec2F::Dot(v, v);
 		if (a == 0) {
 			continue;
 		}
 		float b = Vec2F::Dot(w, v);
-		float radWBuffer = radius + 0.01f;
+		float radWBuffer = radius + 0.001f;
 		float c = Vec2F::Dot(w, w) - 4 * radWBuffer * radWBuffer; // Assume both radiuses are the same, (Ra + Rb)^2 actually
 
 		float det = b * b - a * c;
@@ -234,6 +255,8 @@ void CrowdPerson::AvoidWall(const RectRenderable& rect, float dt)
 		float disp = dist - radius;
 		float fAvoid = (radius - disp) / disp;
 		fAvoid *= dt;
+		fAvoid *= WALL_AVOID_FACTOR;
+
 		vel = vel + Vec2F::Mul(vec, fAvoid);
 
 		float velMag = vel.GetMagnitude();

@@ -1,12 +1,19 @@
-#include "CrowdSim.h"
+#include "CrowdScene3.h"
 
 const int MAX_PEOPLE = 30;
 const float AVERAGE_SPAWN_TIME = 2.0f;
 const Material personMat = Material(ColorRGBA(0.8f, 0.5f, 0.2f, 1.0f), 1.0f, 0.0f, 0.0f, 10.0f, -1);
+const Material destMat = Material(ColorRGBA(0.8f, 0.8f, 0.8f, 0.5f), 1.0f, 0.0f, 0.0f, 10.0f, -1);
 
-CrowdSim::CrowdSim() :
+CrowdScene3::CrowdScene3() :
 	mt(5611),
-	map(Material(ColorRGBA(0.8f, 0.8f, 0.8f, 1.0f), 1.0f, 0.0f, 0.0f, 10.0f, -1), mt, {})
+	map(Material(ColorRGBA(0.8f, 0.8f, 0.8f, 1.0f), 1.0f, 0.0f, 0.0f, 10.0f, -1), mt, {
+		CrowdDest(-5.0f, 5.0f, 6.25f, 5.0f, destMat, Pos2F(0.0f, 5.2f), Pos2F(0.0f, 4.8f)),
+		CrowdDest(-5.0f, 5.0f, -5.0f, -6.25f, destMat, Pos2F(0.0f, -5.2f), Pos2F(0.0f, -4.8f)),
+		CrowdDest(-6.25f, -5.0f, 5.0f, -5.0f, destMat, Pos2F(-5.2f, 0.0f), Pos2F(-4.8f, 0.0f)),
+		CrowdDest(5.0f, 6.25f, 5.0f, -5.0f, destMat, Pos2F(5.2f, 0.0f), Pos2F(4.8f, 0.0f)),
+		CrowdDest(-2.0f, 2.0f, 2.0f, -2.0f, destMat, Pos2F(0.0f, 1.8f), Pos2F(0.0f, 2.2f))
+		})
 {
 	people.reserve(MAX_PEOPLE);
 	auto dest = map.GetRandomDest(mt);
@@ -15,7 +22,7 @@ CrowdSim::CrowdSim() :
 	}
 }
 
-void CrowdSim::Render(Renderer& renderer)
+void CrowdScene3::Render(Renderer& renderer)
 {
 	for (auto& i : people) {
 		if (!i.ReadyToRecycle()) {
@@ -25,7 +32,7 @@ void CrowdSim::Render(Renderer& renderer)
 	map.Render(renderer);
 }
 
-void CrowdSim::Update(float dt)
+void CrowdScene3::Update(float dt)
 {
 	std::uniform_real_distribution<float> randPerson(0.0f, 1.0f);
 	float cutoff = 1.0f - (dt / AVERAGE_SPAWN_TIME);
@@ -40,7 +47,7 @@ void CrowdSim::Update(float dt)
 		if (people[i].ReadyToRecycle()) {
 			continue;
 		}
-		
+
 		people[i].ComputeTTC(people, i + 1, dt);
 	}
 

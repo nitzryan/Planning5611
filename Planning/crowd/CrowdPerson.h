@@ -11,7 +11,7 @@ class CrowdPerson :
 public:
     CrowdPerson(Pos2F start, const Material& mat, const CrowdNode* startNode, const CrowdDest* dest, const CrowdMap* crowdMap);
     float GetDistFrom(const CrowdPerson& p) const;
-    void CalculateDirection();
+    void CalculateDirection(float dt);
     void ComputeTTC(std::vector<CrowdPerson>& people, size_t startIdx, float dt);
     void Move(float dt);
     void AvoidWall(const RectRenderable& rect, float dt);

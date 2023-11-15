@@ -8,10 +8,11 @@
 
 #include "rendering/Camera.h"
 #include "rendering/Renderer.h"
-//#include "scene/TestScene.h"
 #include "scene/RobotScene1.h"
 #include "scene/RobotScene2.h"
-#include "crowd/CrowdSim.h"
+//#include "crowd/CrowdSim.h"
+#include "scene/CrowdScene3.h"
+#include "scene/CrowdScene4.h"
 
 struct ScreenDetails {
 	bool fullscreen;
@@ -116,7 +117,8 @@ int main(int, char**) {
 	UserInput input;
 	RobotScene1 scene1;
 	RobotScene2 scene2;
-	CrowdSim crowdSim;
+	CrowdScene3 scene3;
+	CrowdScene4 scene4;
 
 	IScene* scene;
 	scene = &scene1;
@@ -146,8 +148,12 @@ int main(int, char**) {
 				scene = &scene2;
 			}
 			else if (newSceneId == 3) {
-				crowdSim = CrowdSim();
-				scene = &crowdSim;
+				scene3 = CrowdScene3();
+				scene = &scene3;
+			}
+			else if (newSceneId == 4) {
+				scene4 = CrowdScene4();
+				scene = &scene4;
 			}
 		}
 

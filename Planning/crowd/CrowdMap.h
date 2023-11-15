@@ -11,7 +11,7 @@
 class CrowdMap
 {
 public:
-	CrowdMap(const Material& mat, std::mt19937& mt);
+	CrowdMap(const Material& mat, std::mt19937& mt, std::vector<CrowdDest> destinations);
 	bool ValidPathBetween(const Pos2F& p1, const Pos2F& p2, float cushion) const;
 	void Render(Renderer& renderer);
 	const CrowdDest* GetRandomDest(std::mt19937& mt) const;

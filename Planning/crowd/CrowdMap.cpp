@@ -1,10 +1,12 @@
 #include "CrowdMap.h"
 
-CrowdMap::CrowdMap(const Material& mat, std::mt19937& mt) :
-	floor(Pos2F(-6.25f, 6.25f), Pos2F(6.25f, 6.25f), Pos2F(-6.25f, -6.25f), Pos2F(6.25f, -6.25f), mat)
+const int RAND_NODES = 50;
+
+CrowdMap::CrowdMap(const Material& mat, std::mt19937& mt, std::vector<CrowdDest> destinations) :
+	dests(destinations), floor(Pos2F(-6.25f, 6.25f), Pos2F(6.25f, 6.25f), Pos2F(-6.25f, -6.25f), Pos2F(6.25f, -6.25f), mat)
 {
 	// Create Destinations
-	dests.reserve(5);
+	/*dests.reserve(5);
 	Material destMat = Material(ColorRGBA(0.9f, 0.6f, 0.6f, 0.5f), 1.0f, 0.0f, 0.0f, 10.0f, -1);
 	dests.emplace_back(-5.0f, 5.0f, 6.25f, 5.0f, destMat, Pos2F(0.0f, 5.2f), Pos2F(0.0f, 4.8f));
 
@@ -18,11 +20,10 @@ CrowdMap::CrowdMap(const Material& mat, std::mt19937& mt) :
 	dests.emplace_back(5.0f, 6.25f, 5.0f, -5.0f, destMat, Pos2F(5.2f, 0.0f), Pos2F(4.8f, 0.0f));
 
 	destMat.color = ColorRGBA(0.8f, 0.1f, 0.8f, 0.6f);
-	dests.emplace_back(-2.0f, 2.0f, 2.0f, -2.0f, destMat, Pos2F(0.0f, 1.8f), Pos2F(0.0f, 2.2f));
+	dests.emplace_back(-2.0f, 2.0f, 2.0f, -2.0f, destMat, Pos2F(0.0f, 1.8f), Pos2F(0.0f, 2.2f));*/
 
-	const int randNodes = 30;
-	nodes.reserve(2 * dests.size() + randNodes);
-	Material nodeMat = destMat;
+	nodes.reserve(2 * dests.size() + RAND_NODES);
+	Material nodeMat = dests[0].GetMaterial();
 	nodeMat.color = ColorRGBA(0.3f, 0.3f, 0.3f, 0.7f);
 	for (auto& i : dests) {
 		nodes.emplace_back(i.GetEnterPos(), nodeMat);
@@ -30,7 +31,7 @@ CrowdMap::CrowdMap(const Material& mat, std::mt19937& mt) :
 	}
 
 	std::uniform_real_distribution<float> nodeDist(-4.7f, 4.7f);
-	for (int i = 0; i < randNodes; i++) {
+	for (int i = 0; i < RAND_NODES; i++) {
 		bool intersects = false;
 		Pos2F p(0,0);
 		do {
@@ -55,7 +56,7 @@ CrowdMap::CrowdMap(const Material& mat, std::mt19937& mt) :
 
 	ConnectNodes();
 
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < dests.size(); i++) {
 		dests[i].CreateDStarHeuristic(&nodes[1 + 2 * i]);
 	}
 }
@@ -136,6 +137,11 @@ std::vector<const RectRenderable*> CrowdMap::GetWalls() const
 void CrowdMap::ConnectNodes()
 {
 	for (size_t i = 0; i < nodes.size(); i++) {
+		if (i < 2 * dests.size()) {
+			if (i % 2 == 1) { // Exit positions can only connect to enter positions
+				continue;
+			}
+		}
 		for (size_t j = i + 1; j < nodes.size(); j++) {
 			float dist = (nodes[i].GetCenter() - nodes[j].GetCenter()).GetMagnitude();
 			if (dist < 4.0f) {

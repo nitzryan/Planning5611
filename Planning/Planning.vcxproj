@@ -178,6 +178,8 @@
     <ClInclude Include="rendering\Renderer.h" />
     <ClInclude Include="rendering\RenderingData.h" />
     <ClInclude Include="rendering\SphereRenderable.h" />
+    <ClInclude Include="scene\CrowdScene3.h" />
+    <ClInclude Include="scene\CrowdScene4.h" />
     <ClInclude Include="scene\IScene.h" />
     <ClInclude Include="scene\RobotScene1.h" />
     <ClInclude Include="scene\RobotScene2.h" />
@@ -204,6 +206,8 @@
     <ClCompile Include="rendering\RectRenderable.cpp" />
     <ClCompile Include="rendering\Renderer.cpp" />
     <ClCompile Include="rendering\SphereRenderable.cpp" />
+    <ClCompile Include="scene\CrowdScene3.cpp" />
+    <ClCompile Include="scene\CrowdScene4.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

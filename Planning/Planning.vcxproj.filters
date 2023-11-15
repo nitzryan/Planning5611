@@ -153,6 +153,12 @@
     <ClInclude Include="scene\RobotScene2.h">
       <Filter>scene</Filter>
     </ClInclude>
+    <ClInclude Include="scene\CrowdScene3.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\CrowdScene4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad.c">
@@ -208,6 +214,12 @@
     </ClCompile>
     <ClCompile Include="crowd\CrowdSim.cpp">
       <Filter>crowd</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\CrowdScene3.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\CrowdScene4.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
