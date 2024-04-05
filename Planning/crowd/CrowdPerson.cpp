@@ -12,8 +12,17 @@ const float WALL_AVOID_FACTOR = 0.35f;
 const float AVOIDANCE_DIST = 0.07f;
 const float AVOIDANCE_MAG = 0.25f;
 
+const float RADIUS = 0.125f;
+const float AVOID_IMMINENT_COLLISION_DIST = 3.0f * RADIUS;
+const float AVOID_IMMINENT_COLLISION_MAG = 0.50f;
+const float AVOID_IMMINENT_COL_SLOPE = -1.0f / (AVOID_IMMINENT_COLLISION_DIST - 2.0f * RADIUS);
+const float AVOID_IMMINENT_COL_Y0 = 1.0f - 2.0f * RADIUS * AVOID_IMMINENT_COL_SLOPE;
+
+const float WRONG_DIRECTION_SLOWDOWN_MULT = 25.0f;
+const float WRONG_DIRECTION_SLOWDOWN_START = 0.0f; // 90 deg
+
 CrowdPerson::CrowdPerson(Pos2F start, const Material& mat, const CrowdNode* startNode, const CrowdDest* dest, const CrowdMap* crowdMap) :
-	CircleRenderable(start, 0.125f, mat),
+	CircleRenderable(start, RADIUS, mat),
 	vel(0,0),
 	dest(dest),
 	crowdMap(crowdMap),
@@ -269,6 +278,39 @@ void CrowdPerson::AvoidWall(const RectRenderable& rect, float dt)
 		if (velMag > WALKING_SPEED) {
 			vel.Mul(WALKING_SPEED / velMag);
 		}
+	}
+}
+
+void CrowdPerson::AvoidImminentCollision(const CrowdPerson& p, float dt)
+{
+	Pos2F nextPos = center + Vec2F::Mul(vel, dt);
+	Vec2F centerToPerson = p.center + Vec2F::Mul(p.vel, 0) - nextPos;
+	float distMag = centerToPerson.GetMagnitude();
+	if (distMag < AVOID_IMMINENT_COLLISION_DIST) {
+		centerToPerson.Normalize();
+		float velDeltaMag = AVOID_IMMINENT_COLLISION_MAG * (AVOID_IMMINENT_COL_SLOPE * distMag + AVOID_IMMINENT_COL_Y0);
+		vel = Vec2F::Sub(vel, (Vec2F::Mul(centerToPerson, dt * velDeltaMag)));
+
+		float velMag = vel.GetMagnitude();
+		if (velMag > WALKING_SPEED) {
+			vel.Mul(WALKING_SPEED / velMag);
+		}
+	}
+}
+
+void CrowdPerson::AvoidWrongDirectionMovement(float dt)
+{
+	if (traversalNodes.empty()) {
+		return;
+	}
+	Vec2F nextDirection = traversalNodes[currentNode]->GetCenter() - center;
+	nextDirection.Normalize();
+
+	Vec2F dir = vel.GetNormalized();
+	float vecDot = Vec2F::Dot(nextDirection, dir);
+	if (vecDot < WRONG_DIRECTION_SLOWDOWN_START) {
+		float slowdownMag = WRONG_DIRECTION_SLOWDOWN_MULT * dt * -vecDot;
+		vel = Vec2F::Mul(vel, 1.0f - slowdownMag);
 	}
 }
 

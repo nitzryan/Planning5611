@@ -1,7 +1,8 @@
 #include "CrowdMap.h"
 
-const int RAND_NODES = 50;
+const int RAND_NODES = 100;
 bool CrowdMap::RenderNodes = true;
+bool CrowdMap::RenderLines = true;
 
 CrowdMap::CrowdMap(const Material& mat, std::mt19937& mt, std::vector<CrowdDest> destinations) :
 	dests(destinations), floor(Pos2F(-6.25f, 6.25f), Pos2F(6.25f, 6.25f), Pos2F(-6.25f, -6.25f), Pos2F(6.25f, -6.25f), mat)
@@ -49,7 +50,9 @@ CrowdMap::CrowdMap(const Material& mat, std::mt19937& mt, std::vector<CrowdDest>
 			// Check that it doesn't intersect
 
 			for (auto& d : dests) {
-				if (d.IsInDest(p) || d.IsInDest(pLeft) || d.IsInDest(pRight) || d.IsInDest(pUp) || d.IsInDest(pDown)) {
+				if (d.IsInDest(p) || d.IsInDest(pLeft) || d.IsInDest(pRight) || d.IsInDest(pUp) || d.IsInDest(pDown)
+					|| d.IsInDest(pLeft + Vec2F(0, 0.2f)) || d.IsInDest(pLeft + Vec2F(0, -0.2f))
+					|| d.IsInDest(pRight + Vec2F(0, 0.2f)) || d.IsInDest(pRight + Vec2F(0, -0.2f))) {
 					intersects = true;
 					break;
 				}
@@ -83,7 +86,8 @@ void CrowdMap::Render(Renderer& renderer)
 		for (auto& i : nodes) {
 			renderer.Render(i);
 		}
-
+	}
+	if (CrowdMap::RenderLines) {
 		Material lineMaterial = Material(ColorRGBA(0.1f, 0.1f, 0.8f, 0.3f), 1.0f, 0.0f, 0.0f, 10.0f, -1);
 		for (auto& i : nodes) {
 			auto children = i.GetConnectedNodes();

@@ -20,6 +20,7 @@ public:
 	std::vector<const RectRenderable*> GetWalls() const;
 
 	static bool RenderNodes;
+	static bool RenderLines;
 private:
 	std::vector<CrowdNode> nodes;
 	std::vector<CrowdDest> dests;

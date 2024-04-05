@@ -157,7 +157,10 @@
       <Filter>scene</Filter>
     </ClInclude>
     <ClInclude Include="scene\CrowdScene4.h">
-      <Filter>Header Files</Filter>
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\CrowdScene5.h">
+      <Filter>scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -206,9 +209,6 @@
     <ClCompile Include="crowd\CrowdPerson.cpp">
       <Filter>crowd</Filter>
     </ClCompile>
-    <ClCompile Include="geometry\Line3F.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="geometry\CollisionDetection2D.cpp">
       <Filter>geometry</Filter>
     </ClCompile>
@@ -219,7 +219,13 @@
       <Filter>scene</Filter>
     </ClCompile>
     <ClCompile Include="scene\CrowdScene4.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\CrowdScene5.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\Line3F.cpp">
+      <Filter>geometry</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

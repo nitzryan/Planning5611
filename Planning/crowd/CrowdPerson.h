@@ -15,6 +15,8 @@ public:
     void ComputeTTC(std::vector<CrowdPerson>& people, size_t startIdx, float dt);
     void Move(float dt);
     void AvoidWall(const RectRenderable& rect, float dt);
+    void AvoidImminentCollision(const CrowdPerson& p, float dt);
+    void AvoidWrongDirectionMovement(float dt);
     bool ReadyToRecycle() const;
 private:
     Vec2F vel;

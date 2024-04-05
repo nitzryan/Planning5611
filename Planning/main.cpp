@@ -12,6 +12,7 @@
 #include "scene/RobotScene2.h"
 #include "scene/CrowdScene3.h"
 #include "scene/CrowdScene4.h"
+#include "scene/CrowdScene5.h"
 
 struct ScreenDetails {
 	bool fullscreen;
@@ -71,6 +72,8 @@ int GetInput(UserInput& input, SDL_Event& windowEvent) {
 			scene = 3;
 		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_4)
 			scene = 4;
+		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_5)
+			scene = 5;
 		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_j)
 			input.toggleJointLimits = true;
 		if (windowEvent.type == SDL_KEYDOWN && windowEvent.key.keysym.sym == SDLK_n)
@@ -137,6 +140,7 @@ int main(int, char**) {
 	RobotScene2 scene2;
 	CrowdScene3 scene3;
 	CrowdScene4 scene4;
+	CrowdScene5 scene5;
 
 	IScene* scene;
 	scene = &scene1;
@@ -175,6 +179,10 @@ int main(int, char**) {
 				scene4 = CrowdScene4();
 				scene = &scene4;
 			}
+			else if (newSceneId == 5) {
+				scene5 = CrowdScene5();
+				scene = &scene5;
+			}
 		}
 
 		if (input.toggleJointLimits) {
@@ -184,7 +192,16 @@ int main(int, char**) {
 		}
 
 		if (input.toggleShowNodes) {
-			CrowdMap::RenderNodes = !CrowdMap::RenderNodes;
+			if (CrowdMap::RenderLines) {
+				CrowdMap::RenderLines = false;
+			}
+			else if (CrowdMap::RenderNodes) {
+				CrowdMap::RenderNodes = false;
+			}
+			else {
+				CrowdMap::RenderLines = true;
+				CrowdMap::RenderNodes = true;
+			}
 			input.toggleShowNodes = false;
 		}
 
